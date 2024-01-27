@@ -1,4 +1,4 @@
-CREATE TABLE [dbo].[Guest]
+CREATE TABLE [dbo].[Guests]
 (
   [Id] UNIQUEIDENTIFIER DEFAULT(newid()) NOT NULL PRIMARY KEY,
   [IpAddress] NVARCHAR(255) NOT NULL,

@@ -10,3 +10,4 @@ backend/TinyPath.WebApi/appsettings.Development.json
 database/TinyPath.db/bin/
 database/TinyPath.db/obj/
 backend/.idea/
+.DS_store

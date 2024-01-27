@@ -1,2 +1,12 @@
-TinyPath.app/backend/bin/
-TinyPath.app/backend/obj/
+backend/TinyPath.Application/bin/
+backend/TinyPath.Application/obj/
+backend/TinyPath.Domain/bin/
+backend/TinyPath.Domain/obj/
+backend/TinyPath.Infrastructure/bin/
+backend/TinyPath.Infrastructure/obj/
+backend/TinyPath.WebApi/bin/
+backend/TinyPath.WebApi/obj/
+backend/TinyPath.WebApi/appsettings.Development.json
+database/TinyPath.db/bin/
+database/TinyPath.db/obj/
+backend/.idea/

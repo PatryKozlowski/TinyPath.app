@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\TinyPath.Application\TinyPath.Application.csproj" />
+      <ProjectReference Include="..\TinyPath.Domain\TinyPath.Domain.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -7,6 +7,10 @@ namespace TinyPath.Infrastructure.Persistence;
 
 public class TinyPathDbContext : DbContext, IApplicationDbContext
 {
+    public TinyPathDbContext(DbContextOptions<TinyPathDbContext> options) : base(options)
+    {
+    }
+    
     public DbSet<User> Users { get; set; }
     public DbSet<EmailConfirmation> EmailConfirmations { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }

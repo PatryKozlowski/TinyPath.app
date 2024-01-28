@@ -1,4 +1,5 @@
 using Serilog;
+using TinyPath.Infrastructure;
 
 const string APP_NAME = "TinyPath";
 
@@ -21,6 +22,8 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddControllers();
 

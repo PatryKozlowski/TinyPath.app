@@ -11,4 +11,7 @@ public class Link : DomainEntity
     public required string Url { get; set; }
     public required string OriginalUrl { get; set; }
     public bool Active { get; set; } = true;
+    public User? User { get; set; }
+    public Guest? Guest { get; set; }
+    public LinkStats Stats { get; set; } = default!;
 }

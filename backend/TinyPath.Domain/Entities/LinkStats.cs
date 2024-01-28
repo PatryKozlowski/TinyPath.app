@@ -10,4 +10,5 @@ public class LinkStats : DomainEntity
     public List<string> Device { get; set; } = [];
     public List<string> Platform { get; set; } = [];
     public List<string> Country { get; set; } = [];
+    public Link Link { get; set; } = default!;
 }

@@ -8,4 +8,5 @@ public class EmailConfirmation : DomainEntity
     public required Guid UserId { get; set; }
     public required DateTimeOffset Expires { get; set; }
     public bool Active { get; set; } = true;
+    public User User { get; set; } = default!;
 }

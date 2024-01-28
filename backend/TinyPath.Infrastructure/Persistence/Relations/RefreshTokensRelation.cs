@@ -4,7 +4,7 @@ using TinyPath.Domain.Entities;
 
 namespace TinyPath.Infrastructure.Persistence.Relations;
 
-public class RefreshTokenRelation : IEntityTypeConfiguration<RefreshToken>
+public class RefreshTokensRelation : IEntityTypeConfiguration<RefreshToken>
 {
     public void Configure(EntityTypeBuilder<RefreshToken> builder)
     {

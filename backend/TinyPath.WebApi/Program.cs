@@ -1,4 +1,5 @@
 using Serilog;
+using TinyPath.Application.Logic.Abstractions;
 using TinyPath.Infrastructure;
 
 const string APP_NAME = "TinyPath";
@@ -26,6 +27,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddControllers();
+
+builder.Services.AddMediatR(conf => conf.RegisterServicesFromAssemblyContaining(typeof(BaseCommandHandler)));
 
 var app = builder.Build();
 

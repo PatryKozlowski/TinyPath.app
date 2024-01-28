@@ -2,7 +2,7 @@ using TinyPath.Domain.Common;
 
 namespace TinyPath.Domain.Entities;
 
-public class LinkStat : DomainEntity
+public class LinkStats : DomainEntity
 {
     public required Guid LinkId { get; set; }
     public int Visits { get; set; } = 0;

@@ -15,5 +15,5 @@ public interface IApplicationDbContext
     DbSet<Link> Links { get; set; }
     DbSet<LinkStats> LinksStats { get; set; }
     
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

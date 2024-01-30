@@ -8,11 +8,10 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
 {
     private readonly IList<IValidator<TRequest>> _validators;
 
-    public ValidationBehavior(IList<IValidator<TRequest>> validators)
+    public ValidationBehavior(IEnumerable<IValidator<TRequest>> validators)
     {
         _validators = validators.ToList();
     }
-
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         if (!_validators.Any())
@@ -21,7 +20,6 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
         }
         
         var context = new ValidationContext<TRequest>(request);
-
         var errors = _validators
             .Select(v => v.Validate(context))
             .SelectMany(v => v.Errors)
@@ -31,7 +29,7 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
 
         if (errors.Any())
         {
-            throw new ValidationException()
+            throw new Exceptions.ValidationException()
             {
                 Errors = errors.Select(e => new ValidationException.FieldError()
                 {

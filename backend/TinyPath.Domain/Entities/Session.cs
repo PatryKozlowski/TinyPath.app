@@ -4,7 +4,7 @@ namespace TinyPath.Domain.Entities;
 
 public class Session : DomainEntity
 {
-    public required Guid UserId { get; set; }
+    public Guid UserId { get; set; }
     public required DateTimeOffset Expires { get; set; }
     public User User { get; set; } = default!;
 }

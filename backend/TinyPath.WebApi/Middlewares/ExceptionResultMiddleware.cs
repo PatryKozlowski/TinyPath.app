@@ -21,25 +21,25 @@ public class ExceptionResultMiddleware
         }
         catch (ErrorException e)
         {
-            logger.LogDebug("Error exception ", e);
+            logger.LogDebug($"Error exception {e.Error}");
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             await context.Response.WriteAsJsonAsync(new ErrorResponse { Error = e.Error });
         }
         catch (UnauthorizedException ue)
         {
-            logger.LogDebug("Error exception ", ue);
+            logger.LogDebug($"Error exception {ue.Message}");
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            await context.Response.WriteAsJsonAsync(new UnauthorizedResponse { Response = ue.Message });
+            await context.Response.WriteAsJsonAsync(new UnauthorizedResponse { Response = ue.Message ?? "Unauthorized" });
         }
         catch (ValidationException ve)
         {
-            logger.LogDebug("Validation exception ", ve);
+            logger.LogDebug($"Validation exception {ve.Message}");
             context.Response.StatusCode = (int)HttpStatusCode.UnprocessableContent;
             await context.Response.WriteAsJsonAsync(new ValidationResponse(ve));
         }
         catch (Exception ex)
         {
-            logger.LogCritical("Unhandled exception ", ex);
+            logger.LogCritical($"Unhandled exception {ex.Message}");
             context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
             await context.Response.WriteAsJsonAsync(new ErrorResponse { Error = "Internal server" });
         }

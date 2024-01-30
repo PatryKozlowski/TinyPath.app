@@ -1,6 +1,9 @@
 using Serilog;
+using TinyPath.Application;
 using TinyPath.Application.Logic.Abstractions;
 using TinyPath.Infrastructure;
+using TinyPath.WebApi.Application.Auth;
+using TinyPath.WebApi.Middlewares;
 
 const string APP_NAME = "TinyPath";
 
@@ -21,16 +24,35 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .ReadFrom.Services(services)
     .Enrich.FromLogContext());
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddAuthorization();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(o =>
+{
+    o.CustomSchemaIds(x =>
+    {
+        var name = x.FullName;
+        if (name is not null)
+        {
+            name = name.Replace("+", "-");
+        }
+
+        return name;
+    });
+});
+
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication(builder.Configuration);
+builder.Services.AddAuthDataProvider(builder.Configuration);
 
 builder.Services.AddControllers();
 
 builder.Services.AddMediatR(conf => conf.RegisterServicesFromAssemblyContaining(typeof(BaseCommandHandler)));
 
 var app = builder.Build();
+
+app.UseCustomMiddleware();
 
 if (app.Environment.IsDevelopment())
 {
@@ -45,6 +67,8 @@ if (app.Environment.IsDevelopment())
         .WriteTo.Console()
         .CreateLogger();
 }
+
+app.UseAuthorization();
 
 app.MapControllers();
 

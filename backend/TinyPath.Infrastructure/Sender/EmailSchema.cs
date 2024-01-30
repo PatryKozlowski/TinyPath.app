@@ -1,10 +1,11 @@
+using TinyPath.Application.Interfaces;
 using TinyPath.Domain.Enums;
 
 namespace TinyPath.Infrastructure.Sender;
 
-public class EmailSchema
+public class EmailSchema : IEmailSchema
 {
-    public (string subject, string content) GetSchema(EmailSchemas emailSchema, string? stringParam = null)
+    public  (string subject, string content) GetSchema(EmailSchemas emailSchema, string? stringParam = null)
     {
         return emailSchema switch
         {

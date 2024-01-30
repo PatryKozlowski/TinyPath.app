@@ -29,7 +29,7 @@ public class ExceptionResultMiddleware
         {
             logger.LogDebug($"Error exception {ue.Message}");
             context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            await context.Response.WriteAsJsonAsync(new UnauthorizedResponse { Response = ue.Message ?? "Unauthorized" });
+            await context.Response.WriteAsJsonAsync(new UnauthorizedResponse { Response = ue.Reason ?? "Unauthorized" });
         }
         catch (ValidationException ve)
         {

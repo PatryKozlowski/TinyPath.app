@@ -29,16 +29,16 @@ public abstract class CreateUserCommand
         private readonly IGetJwtOptions _getJwtOptions;
         private readonly IEmailSender _emailSender;
         private readonly IEmailSchema _emailSchema;
-        private readonly IGetConformationLink _conformationLink;
+        private readonly IGetConfirmationLink _confirmationLink;
         
-        public Handler(IApplicationDbContext dbContext, IPasswordManager passwordManager, IJwtManager jwtManager, IGetJwtOptions getJwtOptions, IEmailSender emailSender, IEmailSchema emailSchema, IGetConformationLink conformationLink) : base(dbContext)
+        public Handler(IApplicationDbContext dbContext, IPasswordManager passwordManager, IJwtManager jwtManager, IGetJwtOptions getJwtOptions, IEmailSender emailSender, IEmailSchema emailSchema, IGetConfirmationLink confirmationLink) : base(dbContext)
         {
             _passwordManager = passwordManager;
             _jwtManager = jwtManager;
             _getJwtOptions = getJwtOptions;
             _emailSender = emailSender;
             _emailSchema = emailSchema;
-            _conformationLink = conformationLink;
+            _confirmationLink = confirmationLink;
         }
 
         public async Task<Response> Handle(Request request, CancellationToken cancellationToken)
@@ -80,7 +80,7 @@ public abstract class CreateUserCommand
 
            _dbContext.EmailConfirmations.Update(emailConfirm);
            
-           var emailConfirmationLink = _conformationLink.EmailConfirmationLink(emailConfirmationToken);
+           var emailConfirmationLink = _confirmationLink.EmailConfirmationLink(emailConfirmationToken);
 
            var emailConfirmationSchema = _emailSchema.GetSchema(EmailSchemas.ConfirmEmail, emailConfirmationLink);
            

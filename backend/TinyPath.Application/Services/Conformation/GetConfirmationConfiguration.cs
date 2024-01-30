@@ -3,12 +3,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace TinyPath.Application.Services.Conformation;
 
-public static class GetConformationConfiguration
+public static class GetConfirmationConfiguration
 {
     public static IServiceCollection AddConformation(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<ConformationOptions>(configuration.GetSection("Confirmation"));
-        services.AddScoped<IGetConformationLink, GetConformationLink>();
+        services.Configure<ConfirmatioOptions>(configuration.GetSection("Confirmation"));
+        services.AddScoped<IGetConfirmationLink, GetConfirmationLink>();
         return services;
     }
 }

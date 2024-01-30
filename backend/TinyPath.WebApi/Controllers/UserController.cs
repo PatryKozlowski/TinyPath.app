@@ -40,6 +40,20 @@ public class UserController : BaseController
     }
     
     [HttpPost]
+    public async Task<ActionResult> RefreshTokenCommand()
+    {
+        var response = await _mediator.Send(new RefreshTokenCommand.Request());
+
+        if (Response.StatusCode == 200)
+        {
+            DeleteTokenCookie();
+            SetTokenCookie(response.Token);
+        }
+
+        return Ok(new JwtResponse() { AccessToken = response.Token });
+    }
+    
+    [HttpPost]
     public async Task<ActionResult> LoginCommand([FromBody] LoginCommand.Request request)
     {
         var response = await _mediator.Send(request);

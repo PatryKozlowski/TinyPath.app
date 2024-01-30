@@ -26,15 +26,15 @@ public abstract class RegenerateConfirmEmailCommand
     {
         private readonly IJwtManager _jwtManager;
         private readonly IGetJwtOptions _getJwtOptions;
-        private readonly IGetConformationLink _getConformationLink;
+        private readonly IGetConfirmationLink _getConfirmationLink;
         private readonly IEmailSender _emailSender;
         private readonly IEmailSchema _emailSchema;
         
-        public Handler(IApplicationDbContext dbContext, IJwtManager jwtManager, IGetJwtOptions getJwtOptions, IGetConformationLink getConformationLink, IEmailSender emailSender, IEmailSchema emailSchema) : base(dbContext)
+        public Handler(IApplicationDbContext dbContext, IJwtManager jwtManager, IGetJwtOptions getJwtOptions, IGetConfirmationLink getConfirmationLink, IEmailSender emailSender, IEmailSchema emailSchema) : base(dbContext)
         {
             _jwtManager = jwtManager;
             _getJwtOptions = getJwtOptions;
-            _getConformationLink = getConformationLink;
+            _getConfirmationLink = getConfirmationLink;
             _emailSender = emailSender;
             _emailSchema = emailSchema;
         }
@@ -75,7 +75,7 @@ public abstract class RegenerateConfirmEmailCommand
 
                 _dbContext.EmailConfirmations.Update(emailConfirmation);
 
-                var activationLink = _getConformationLink.EmailConfirmationLink(emailConfirmationToken);
+                var activationLink = _getConfirmationLink.EmailConfirmationLink(emailConfirmationToken);
 
                 var emailMessage = _emailSchema.GetSchema(EmailSchemas.ConfirmEmail, activationLink);
 

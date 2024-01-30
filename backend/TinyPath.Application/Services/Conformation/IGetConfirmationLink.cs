@@ -1,6 +1,6 @@
 namespace TinyPath.Application.Services.Conformation;
 
-public interface IGetConformationLink
+public interface IGetConfirmationLink
 {
     string EmailConfirmationLink(string confirmationToken);
 }

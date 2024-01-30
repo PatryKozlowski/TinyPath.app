@@ -46,11 +46,11 @@ public class UserController : BaseController
 
         if (Response.StatusCode == 200)
         {
-            DeleteTokenCookie();
-            SetTokenCookie(response.Token);
+            DeleteTokenCookie(true);
+            SetTokenCookie(response.Token, true);
         }
 
-        return Ok(new JwtResponse() { AccessToken = response.Token });
+        return Ok(new JwtResponse() { RefreshToken = response.Token });
     }
     
     [HttpPost]

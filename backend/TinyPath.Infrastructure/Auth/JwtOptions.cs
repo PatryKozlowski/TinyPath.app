@@ -8,4 +8,5 @@ public class JwtOptions
     public required int ExpirationInMinutes { get; init; }
     public required int RefreshTokenExpirationInMinutes { get; init; }
     public required int ConfirmationTokenExpirationInMinutes { get; init; }
+    public required int RegenerateRefreshTokenOnLoginBeforeExpirationInDays { get; init; }
 }

@@ -129,4 +129,10 @@ public class JwtManager : IJwtManager
         var claims = new List<Claim> { confirmationIdClaim };
         return GenerateTokenWithClaims(claims, false, expirationInMinutes);
     }
+
+    public bool ShouldRegenerateRefreshToken(DateTimeOffset expirationDate)
+    {
+        TimeSpan timeUntilExpiration = expirationDate - DateTimeOffset.Now;
+        return timeUntilExpiration.TotalDays <= 7;
+    }
 }

@@ -6,4 +6,5 @@ public interface IJwtManager
     bool ValidateToken(string token);
     string? GetClaim(string token, string claimType);
     string GenerateConfirmationToken(Guid confirmationId);
+    bool ShouldRegenerateRefreshToken(DateTimeOffset expirationDate);
 }

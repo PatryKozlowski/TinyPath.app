@@ -21,4 +21,9 @@ public class GetJwtOptions :IGetJwtOptions
     {
         return _jwtOptions.ConfirmationTokenExpirationInMinutes;
     }
+
+    public int GetRegenerateRefreshTokenOnLoginBeforeExpirationInDays()
+    {
+        return _jwtOptions.RegenerateRefreshTokenOnLoginBeforeExpirationInDays;
+    }
 }

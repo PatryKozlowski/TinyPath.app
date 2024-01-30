@@ -60,6 +60,11 @@ public abstract class LoginCommand
             {
                 throw new UnauthorizedException("UserAlreadyLoggedIn");
             }
+
+            if (!user.RefreshToken.Active)
+            {
+                throw new UnauthorizedException("RefreshTokenIsNotActive");
+            }
             
             if (!_passwordManager.VerifyPassword(user.Password, request.Password))
             {
@@ -84,10 +89,9 @@ public abstract class LoginCommand
                 _dbContext.Sessions.Update(user.Session);
             }
             
-            var refreshTokenExpirationTime = _getJwtOptions.GetExpirationTokenTime(true);
-            
-            if (user.RefreshToken is null || !user.RefreshToken.Active || user.RefreshToken.Expires < DateTimeOffset.Now.AddDays(-7))
+            if (user.RefreshToken is null  || _jwtManager.ShouldRegenerateRefreshToken(user.RefreshToken.Expires))
             {
+                var refreshTokenExpirationTime = _getJwtOptions.GetExpirationTokenTime(true);
                 var refreshTokenCode = _jwtManager.GenerateToken(user.Id, null, true);
                 user.RefreshToken = new Domain.Entities.RefreshToken
                 {

@@ -6,4 +6,5 @@ public interface IAuthDataProvider
     string? GetRefreshTokenFromCookie();
     Guid? GetUserId(bool fromRefreshToken = false);
     Guid? GetSessionUserId();
+    string GetRemoteIpAddress();
 }

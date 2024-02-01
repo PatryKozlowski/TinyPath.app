@@ -1,3 +1,4 @@
+using System.Net;
 using TinyPath.Application.Interfaces;
 using TinyPath.Infrastructure.Auth;
 
@@ -7,6 +8,8 @@ public class AuthDataProvider : IAuthDataProvider
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IJwtManager _jwtManager;
+    private const string X_CLIENT_IP = "X-Client-IP";
+    private const string X_FORWARDED_FOR = "X-Forwarded-For";
 
     public AuthDataProvider(IHttpContextAccessor httpContextAccessor, IJwtManager jwtManager)
     {
@@ -49,7 +52,29 @@ public class AuthDataProvider : IAuthDataProvider
         
         return null;
     }
-    
+
+    public string GetRemoteIpAddress()
+    {
+        var headers = _httpContextAccessor.HttpContext?.Request.Headers;
+
+        if (headers!.ContainsKey(X_CLIENT_IP))
+        {
+            return headers[X_CLIENT_IP].ToString();
+        }
+        else if (headers.ContainsKey(X_FORWARDED_FOR))
+        {
+            var forwardedFor = headers[X_FORWARDED_FOR].ToString();
+            var forwardedForSplit = forwardedFor.Split(",");
+            
+            if (forwardedForSplit.Length > 0 && IPAddress.TryParse(forwardedForSplit[0], out var ipAddress))
+            {
+                return ipAddress.ToString();
+            }
+        }
+
+        return _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString()!;
+    }
+
     public string? GetRefreshTokenFromCookie()
     {
         var token = _httpContextAccessor.HttpContext?.Request.Cookies[CookieSettings.COOKIE_REFRESH_TOKEN_NAME];

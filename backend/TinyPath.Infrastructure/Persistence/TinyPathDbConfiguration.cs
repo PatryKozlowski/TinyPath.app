@@ -15,7 +15,7 @@ public static class TinyPathDbConfiguration
 
         void ConfigureDbContext(IServiceProvider provider, DbContextOptionsBuilder builder)
         {
-            builder.UseSqlServer(connectionString, o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery))
+            builder.UseNpgsql(connectionString, o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery))
                 .AddInterceptors(provider.GetRequiredService<SecondLevelCacheInterceptor>());
         }
     }

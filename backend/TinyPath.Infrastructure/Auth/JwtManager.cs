@@ -132,7 +132,7 @@ public class JwtManager : IJwtManager
 
     public bool ShouldRegenerateRefreshToken(DateTimeOffset expirationDate)
     {
-        TimeSpan timeUntilExpiration = expirationDate - DateTimeOffset.Now;
+        TimeSpan timeUntilExpiration = expirationDate - DateTimeOffset.UtcNow;
         return timeUntilExpiration.TotalDays <= 7;
     }
 }

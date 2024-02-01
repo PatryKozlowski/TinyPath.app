@@ -46,7 +46,7 @@ public abstract class ConfirmEmailCommand
                 throw new ErrorException("InvalidConfirmationCode");
             }
             
-            if (user.EmailConfirmation.Expires < DateTimeOffset.Now)
+            if (user.EmailConfirmation.Expires < DateTimeOffset.UtcNow)
             {
                 throw new ErrorException("ConfirmationCodeExpired");
             }

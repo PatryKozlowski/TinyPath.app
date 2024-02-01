@@ -33,11 +33,11 @@ public class TinyPathDbContext : DbContext, IApplicationDbContext
             switch (entry.State)
             {
                 case EntityState.Added:
-                    entry.Entity.Created = DateTime.UtcNow;
+                    entry.Entity.Created = DateTimeOffset.UtcNow;
                     break;
                 
                 case EntityState.Modified:
-                    entry.Entity.Updated = DateTime.UtcNow;
+                    entry.Entity.Updated = DateTimeOffset.UtcNow;
                     break;
             }
         }

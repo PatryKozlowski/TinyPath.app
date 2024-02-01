@@ -56,12 +56,12 @@ public abstract class LoginCommand
                 throw new UnauthorizedException("UserIsBlocked");
             }
             
-            if (user.Session is not null && user.Session.Expires > DateTimeOffset.Now)
+            if (user.Session is not null && user.Session.Expires > DateTimeOffset.UtcNow)
             {
                 throw new UnauthorizedException("UserAlreadyLoggedIn");
             }
 
-            if (!user.RefreshToken.Active)
+            if ( user.RefreshToken is not null && !user.RefreshToken.Active)
             {
                 throw new UnauthorizedException("RefreshTokenIsNotActive");
             }
@@ -77,7 +77,7 @@ public abstract class LoginCommand
             {
                 user.Session = new Domain.Entities.Session
                 {
-                    Expires = DateTimeOffset.Now.AddMinutes(sessionUserExpires),
+                    Expires = DateTimeOffset.UtcNow.AddMinutes(sessionUserExpires),
                     User = user,
                 };
                 
@@ -85,7 +85,7 @@ public abstract class LoginCommand
             }
             else
             {
-                user.Session.Expires = DateTimeOffset.Now.AddMinutes(sessionUserExpires);
+                user.Session.Expires = DateTimeOffset.UtcNow.AddMinutes(sessionUserExpires);
                 _dbContext.Sessions.Update(user.Session);
             }
             
@@ -96,7 +96,7 @@ public abstract class LoginCommand
                 user.RefreshToken = new Domain.Entities.RefreshToken
                 {
                     Token = refreshTokenCode,
-                    Expires = DateTimeOffset.Now.AddMinutes(refreshTokenExpirationTime),
+                    Expires = DateTimeOffset.UtcNow.AddMinutes(refreshTokenExpirationTime),
                 };
                 
                 _dbContext.RefreshTokens.Add(user.RefreshToken);

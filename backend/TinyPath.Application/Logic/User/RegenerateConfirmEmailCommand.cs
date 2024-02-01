@@ -56,7 +56,7 @@ public abstract class RegenerateConfirmEmailCommand
                 throw new ErrorException("EmailConfirmationNotActive");
             }
 
-            if (user.EmailConfirmation.Expires < DateTimeOffset.Now)
+            if (user.EmailConfirmation.Expires < DateTimeOffset.UtcNow)
             {
 
                 var emailConfirmationCode = Guid.NewGuid();
@@ -66,7 +66,7 @@ public abstract class RegenerateConfirmEmailCommand
                 var emailConfirmation = new EmailConfirmation
                 {
                     Code = emailConfirmationCode,
-                    Expires = DateTimeOffset.Now.AddMinutes(emailConfirmationTokenExpirationTime),
+                    Expires = DateTimeOffset.UtcNow.AddMinutes(emailConfirmationTokenExpirationTime),
                     Active = true,
                     UserId = user.Id
                 };

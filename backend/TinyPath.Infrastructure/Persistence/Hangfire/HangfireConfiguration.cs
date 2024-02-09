@@ -77,6 +77,6 @@ public static class HangfireConfiguration
     private static void UseHangfireRecurringJob()
     {
         RecurringJob
-            .AddOrUpdate<ILinkManager>("AggregateLinkStats",  x =>  x.AggregateLinkStats(), Cron.Minutely);
+            .AddOrUpdate<ILinkManager>("AggregateLinkStats",  x =>  x.AggregateLinkStats(), Cron.Daily(3));
     }
 }

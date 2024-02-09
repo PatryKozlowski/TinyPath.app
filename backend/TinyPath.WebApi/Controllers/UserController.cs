@@ -22,21 +22,21 @@ public class UserController : BaseController
     public async Task<ActionResult> CreateUserCommand([FromBody] CreateUserCommand.Request request)
     {
         var response = await _mediator.Send(request);
-        return Ok(new Message() { Text = response.Message });
+        return Ok(request);
     }
     
     [HttpGet]
     public async Task<ActionResult> ConfirmEmailCommand([FromQuery] ConfirmEmailCommand.Request request)
     {
         var response = await _mediator.Send(request);
-        return Ok(new Message() { Text = response.Message });
+        return Ok(response);
     }
     
     [HttpPost]
     public async Task<ActionResult> RegenerateConfirmEmailCommand([FromBody] RegenerateConfirmEmailCommand.Request request)
     {
         var response = await _mediator.Send(request);
-        return Ok(new Message() { Text = response.Message });
+        return Ok(response);
     }
     
     [HttpPost]
@@ -50,7 +50,7 @@ public class UserController : BaseController
             SetTokenCookie(response.Token, true);
         }
 
-        return Ok(new JwtResponse() { RefreshToken = response.Token });
+        return Ok(response);
     }
     
     [HttpPost]
@@ -59,7 +59,7 @@ public class UserController : BaseController
         var response = await _mediator.Send(request);
         SetTokenCookie(response.Token);
         SetTokenCookie(response.RefreshToken, true);
-        return Ok(new JwtResponse() { AccessToken = response.Token, RefreshToken = response.RefreshToken });
+        return Ok(response);
     }
     
     [HttpPost]
@@ -73,7 +73,7 @@ public class UserController : BaseController
             DeleteTokenCookie(true);
         }
            
-        return Ok(new Message() { Text = response.Message });
+        return Ok(response);
     }
     
     private void SetTokenCookie(string token, bool isRefreshToken = false)

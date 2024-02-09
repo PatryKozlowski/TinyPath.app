@@ -6,6 +6,7 @@ using TinyPath.Application.Interfaces;
 using TinyPath.Application.Logic.Abstractions;
 using TinyPath.Application.Services.Conformation;
 using TinyPath.Domain.Entities;
+using TinyPath.Domain.Entities.TinyPath;
 using TinyPath.Domain.Enums;
 
 namespace TinyPath.Application.Logic.User;

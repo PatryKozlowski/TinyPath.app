@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TinyPath.Application.Exceptions;
 using TinyPath.Application.Interfaces;
 using TinyPath.Application.Logic.Abstractions;
+using TinyPath.Domain.Entities.TinyPath;
 
 namespace TinyPath.Application.Logic.User;
 
@@ -75,7 +76,7 @@ public abstract class LoginCommand
 
             if (user.Session is null)
             {
-                user.Session = new Domain.Entities.Session
+                user.Session = new Session
                 {
                     Expires = DateTimeOffset.UtcNow.AddMinutes(sessionUserExpires),
                     User = user,
@@ -93,7 +94,7 @@ public abstract class LoginCommand
             {
                 var refreshTokenExpirationTime = _getJwtOptions.GetExpirationTokenTime(true);
                 var refreshTokenCode = _jwtManager.GenerateToken(user.Id, null, true);
-                user.RefreshToken = new Domain.Entities.RefreshToken
+                user.RefreshToken = new RefreshToken
                 {
                     Token = refreshTokenCode,
                     Expires = DateTimeOffset.UtcNow.AddMinutes(refreshTokenExpirationTime),

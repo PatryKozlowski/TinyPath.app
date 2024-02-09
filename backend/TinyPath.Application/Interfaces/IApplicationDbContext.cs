@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TinyPath.Domain.Entities;
+using TinyPath.Domain.Entities.TinyPath;
 
 namespace TinyPath.Application.Interfaces;
 
@@ -14,6 +15,7 @@ public interface IApplicationDbContext
     DbSet<Customer> Customers { get; set; }
     DbSet<Link> Links { get; set; }
     DbSet<LinkStats> LinksStats { get; set; }
+    DbSet<TemporaryLinkStats> TemporaryLinkStats { get; set; }
     
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

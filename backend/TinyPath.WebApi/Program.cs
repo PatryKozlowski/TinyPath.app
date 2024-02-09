@@ -2,7 +2,9 @@ using Serilog;
 using TinyPath.Application;
 using TinyPath.Application.Logic.Abstractions;
 using TinyPath.Infrastructure;
+using TinyPath.Infrastructure.Persistence.Hangfire;
 using TinyPath.WebApi.Application.Auth;
+using TinyPath.WebApi.Application.Link;
 using TinyPath.WebApi.Middlewares;
 
 const string APP_NAME = "TinyPath";
@@ -45,6 +47,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddAuthDataProvider(builder.Configuration);
+builder.Services.AddLinkStatsProvider();
 
 builder.Services.AddControllers();
 
@@ -58,7 +61,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-
+    
     Log.Logger = new LoggerConfiguration()
         .Enrich.WithProperty("Application", $"DEV-{APP_NAME}")
         .Enrich.WithProperty("MachineName", Environment.MachineName)
@@ -71,5 +74,7 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseHangfire(builder.Configuration);
 
 app.Run();

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using TinyPath.Application.Exceptions;
 using TinyPath.Application.Interfaces;
 using TinyPath.Application.Logic.Abstractions;
+using TinyPath.Domain.Entities.TinyPath;
 
 namespace TinyPath.Application.Logic.User;
 
@@ -54,7 +55,7 @@ public abstract class RefreshTokenCommand
                         var token = _jwtManager.GenerateToken(user.Id, user.Session.Id);
                         var expiration = _getJwtOptions.GetExpirationTokenTime(true);
                         
-                        var newRefreshTokenEntity = new Domain.Entities.RefreshToken()
+                        var newRefreshTokenEntity = new RefreshToken()
                         {
                             Token = token,
                             Expires = DateTimeOffset.UtcNow.AddMinutes(expiration),

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TinyPath.Application.Interfaces;
 using TinyPath.Application.Logic.Abstractions;
 using TinyPath.Application.Services.Conformation;
+using TinyPath.Domain.Entities.TinyPath;
 using TinyPath.Domain.Enums;
 
 namespace TinyPath.Application.Logic.User;
@@ -55,7 +56,7 @@ public abstract class CreateUserCommand
                throw new Exception("EmailAlreadyExists");
            }
            
-           var createdUser = new Domain.Entities.User
+           var createdUser = new Domain.Entities.TinyPath.User
            {
                Email = request.Email,
                Password = "",
@@ -70,7 +71,7 @@ public abstract class CreateUserCommand
            var emailConfirmationToken = _jwtManager.GenerateConfirmationToken(emailConfirmationCode);
            var emailConfirmationTokenExpirationTime = _getJwtOptions.GetExpirationConfirmationTokenTime();
            
-           var emailConfirm = new Domain.Entities.EmailConfirmation()
+           var emailConfirm = new EmailConfirmation()
            {
                Code = emailConfirmationCode,
                Expires = DateTime.UtcNow.AddMinutes(emailConfirmationTokenExpirationTime),

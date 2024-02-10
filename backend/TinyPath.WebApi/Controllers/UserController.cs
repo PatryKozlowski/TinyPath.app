@@ -21,22 +21,19 @@ public class UserController : BaseController
     [HttpPost]
     public async Task<ActionResult> CreateUserCommand([FromBody] CreateUserCommand.Request request)
     {
-        var response = await _mediator.Send(request);
-        return Ok(request);
+        return await ProcessRequestAsync(request);
     }
     
     [HttpGet]
     public async Task<ActionResult> ConfirmEmailCommand([FromQuery] ConfirmEmailCommand.Request request)
     {
-        var response = await _mediator.Send(request);
-        return Ok(response);
+        return await ProcessRequestAsync(request);
     }
     
     [HttpPost]
     public async Task<ActionResult> RegenerateConfirmEmailCommand([FromBody] RegenerateConfirmEmailCommand.Request request)
     {
-        var response = await _mediator.Send(request);
-        return Ok(response);
+        return await ProcessRequestAsync(request);
     }
     
     [HttpPost]
@@ -105,5 +102,11 @@ public class UserController : BaseController
         {
             HttpOnly = true,
         });
+    }
+    
+    private async Task<ActionResult> ProcessRequestAsync<TRequest>(TRequest request)
+    {
+        var response = await _mediator.Send(request!);
+        return Ok(response);
     }
 }

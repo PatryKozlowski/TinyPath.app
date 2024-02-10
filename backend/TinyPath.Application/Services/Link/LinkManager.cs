@@ -146,4 +146,41 @@ public class LinkManager : ILinkManager
 
         _logger.LogInformation("Aggregated link stats finished");
     }
+
+    public async Task<(int totalVisits, string? linkUrl)> GetLasGuestLinkVisitsByLinkId(Guid linkId)
+    {
+        var linkUrl = await _dbContext.Links
+            .Where(x => x.Id == linkId)
+            .Select(x => x.Url)
+            .FirstOrDefaultAsync();
+        
+        if (linkUrl is null)
+        {
+            throw new ErrorException("LinkNotFound");
+        }
+        
+        var getLinksVisitsFromTemporaryStats = await _dbContext.TemporaryLinkStats
+            .Where(x => x.LinkId == linkId)
+            .SumAsync(x => x.Visits);
+        
+        var getLinksVisitsFromStats = await _dbContext.LinksStats
+            .Where(x => x.LinkId == linkId)
+            .Select(x => x.Visits)
+            .FirstOrDefaultAsync();
+        
+        var totalVisits = getLinksVisitsFromTemporaryStats + getLinksVisitsFromStats;
+        
+        return (totalVisits, linkUrl);
+    }
+    
+    public async Task<Guid> GetLastGuestUserLinkId(Guid guestId)
+    {
+        var lastGuestUserLink = await _dbContext.Links
+            .Where(x => x.GuestId == guestId)
+            .OrderByDescending(x => x.Created)
+            .Select(x => x.Id)
+            .FirstOrDefaultAsync();
+        
+        return lastGuestUserLink;
+    }
 }

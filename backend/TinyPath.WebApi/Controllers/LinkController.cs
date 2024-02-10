@@ -4,26 +4,40 @@ using TinyPath.Application.Logic.Link;
 
 namespace TinyPath.WebApi.Controllers;
 
-[Route("api/[controller]/[action]")]
 [ApiController]
-
 public class LinkController : BaseController
 {
     public LinkController(ILogger<LinkController> logger, IMediator mediator) : base(logger, mediator)
     {
     }
     
-    [HttpPost]
-    public async Task<ActionResult> CreateShortLinkCommand([FromBody] CreateShortLinkCommand.Request request)
+    [HttpPost("api/[controller]/[action]")]
+    public async Task<ActionResult> CreateShortLink([FromBody] CreateShortLinkCommand.Request request)
     {
-        var response = await _mediator.Send(request);
-        return Ok(response);
+        return await ProcessRequestAsync(request);
     }
     
-    [HttpPost]
-    public async Task<ActionResult> CreateCustomShortLinkCommand([FromBody] CreateCustomShortLinkCommand.Request request)
+    [HttpPost("api/[controller]/[action]")]
+    public async Task<ActionResult> CreateCustomShortLink([FromBody] CreateCustomShortLinkCommand.Request request)
     {
-        var response = await _mediator.Send(request);
+        return await ProcessRequestAsync(request);
+    }
+    
+    [HttpPost("api/[controller]/[action]")]
+    public async Task<ActionResult> SendLinkViewsEmailForGuestUser([FromBody] SendLinkViewsEmailForGuestUserCommand.Request request)
+    {
+        return await ProcessRequestAsync(request);
+    }
+    
+    [HttpGet("[controller]/[action]")] 
+    public async Task<ActionResult> GetLinkViewsCountForGuestUser([FromQuery] GetLinkViewsCountForGuestUserCommand.Request request)
+    {
+        return await ProcessRequestAsync(request);
+    }
+    
+    private async Task<ActionResult> ProcessRequestAsync<TRequest>(TRequest request)
+    {
+        var response = await _mediator.Send(request!);
         return Ok(response);
     }
 }

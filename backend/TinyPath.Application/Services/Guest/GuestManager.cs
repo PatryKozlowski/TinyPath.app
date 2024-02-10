@@ -37,9 +37,15 @@ public class GuestManager : IGuestManager
     public async Task<Domain.Entities.TinyPath.Guest?> GetGuestUser()
     {
         var remoteIpAddress = GetRemoteIpAddress();
+        var ipAddress = remoteIpAddress;
+        
+        if (remoteIpAddress is "::1")
+        {
+            ipAddress =  "127.0.0.1";
+        }
         
         var guestUser = await _dbContext.Guests
-            .Where(x => x.IpAddress == remoteIpAddress)
+            .Where(x => x.IpAddress == ipAddress)
             .FirstOrDefaultAsync();
         
         return guestUser;

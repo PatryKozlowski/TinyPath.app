@@ -18,7 +18,7 @@ public abstract class EmailSenderSchemas
     
     public static (string subject, string content) EmailWithLinkViewsCountSchema(string link)
     {
-        var subject = "Confirm your email";
+        var subject = "Check the number of views for your link";
 
         var content = $"Dear User,<br /><br />" +
                $"You can find the link to check the number of views below:<br /><br />" +

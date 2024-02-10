@@ -10,6 +10,9 @@ public class AuthDataProvider : IAuthDataProvider
     private readonly IJwtManager _jwtManager;
     private const string X_CLIENT_IP = "X-Client-IP";
     private const string X_FORWARDED_FOR = "X-Forwarded-For";
+    private const string STRIPE_SIGNATURE_HEADER = "Stripe-Signature";
+    private const string BEARER = "Bearer";
+    private const string AUTHORIZATION = "Authorization";
 
     public AuthDataProvider(IHttpContextAccessor httpContextAccessor, IJwtManager jwtManager)
     {
@@ -91,7 +94,7 @@ public class AuthDataProvider : IAuthDataProvider
     
     private string? GetTokenFromHeader()
     {
-        var token = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+        var token = _httpContextAccessor.HttpContext?.Request.Headers[AUTHORIZATION].FirstOrDefault();
 
         if (string.IsNullOrEmpty(token))
         {
@@ -99,7 +102,7 @@ public class AuthDataProvider : IAuthDataProvider
         }
         
         var splitToken = token.Split(" ");
-        if (splitToken.Length > 1 && splitToken[0].Equals("Bearer"))
+        if (splitToken.Length > 1 && splitToken[0].Equals(BEARER))
         {
             return splitToken[1];
         }
@@ -120,5 +123,18 @@ public class AuthDataProvider : IAuthDataProvider
         }
         
         return null;
+    }
+    
+    public async Task<string> GetStripeRequestBody()
+    {
+        var json = await new StreamReader(_httpContextAccessor?.HttpContext?.Request.Body!).ReadToEndAsync();
+        
+        return json;
+    }
+
+    public async Task<string> GetStripeSignatureHeader()
+    {
+        var stripeSignatureHeader = _httpContextAccessor?.HttpContext?.Request.Headers[STRIPE_SIGNATURE_HEADER];
+        return stripeSignatureHeader.ToString()!;
     }
 }

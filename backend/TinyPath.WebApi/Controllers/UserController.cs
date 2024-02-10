@@ -43,8 +43,8 @@ public class UserController : BaseController
 
         if (Response.StatusCode == 200)
         {
-            DeleteTokenCookie(true);
-            SetTokenCookie(response.Token, true);
+            DeleteTokenCookie();
+            SetTokenCookie(response.Token);
         }
 
         return Ok(response);

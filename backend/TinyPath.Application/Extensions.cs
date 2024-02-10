@@ -8,6 +8,7 @@ using TinyPath.Application.Services.Guest;
 using TinyPath.Application.Services.Hangfire;
 using TinyPath.Application.Services.Link;
 using TinyPath.Application.Services.Redirect;
+using TinyPath.Application.Services.User;
 
 namespace TinyPath.Application;
 
@@ -22,6 +23,7 @@ public static class Extensions
         services.AddRedirectServices();
         services.AddLinkServices(configuration);
         services.AddHangfireServices();
+        services.AddUserServices();
         
         return services;
     }

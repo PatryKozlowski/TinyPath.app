@@ -7,4 +7,6 @@ public interface IAuthDataProvider
     Guid? GetUserId(bool fromRefreshToken = false);
     Guid? GetSessionUserId();
     string GetRemoteIpAddress();
+    Task<string> GetStripeRequestBody();
+    Task<string> GetStripeSignatureHeader();
 }

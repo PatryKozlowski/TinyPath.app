@@ -12,19 +12,19 @@ public class LinkController : BaseController
     }
     
     [HttpPost("api/[controller]/[action]")]
-    public async Task<ActionResult> CreateShortLink([FromBody] CreateShortLinkCommand.Request request)
+    public async Task<ActionResult> CreateShortLinkCommand([FromBody] CreateShortLinkCommand.Request request)
     {
         return await ProcessRequestAsync(request);
     }
     
     [HttpPost("api/[controller]/[action]")]
-    public async Task<ActionResult> CreateCustomShortLink([FromBody] CreateCustomShortLinkCommand.Request request)
+    public async Task<ActionResult> CreateCustomShortLinkCommand([FromBody] CreateCustomShortLinkCommand.Request request)
     {
         return await ProcessRequestAsync(request);
     }
     
     [HttpPost("api/[controller]/[action]")]
-    public async Task<ActionResult> SendLinkViewsEmailForGuestUser([FromBody] SendLinkViewsEmailForGuestUserCommand.Request request)
+    public async Task<ActionResult> SendLinkViewsEmailForGuestUserCommand([FromBody] SendLinkViewsEmailForGuestUserCommand.Request request)
     {
         return await ProcessRequestAsync(request);
     }

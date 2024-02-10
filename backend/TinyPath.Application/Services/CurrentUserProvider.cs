@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using TinyPath.Application.Interfaces;
-using TinyPath.Domain.Entities;
-using TinyPath.Domain.Entities.TinyPath;
 using TinyPath.Domain.Enums;
 
 namespace TinyPath.Application.Services;
@@ -17,12 +15,13 @@ public class CurrentUserProvider : ICurrentUserProvider
         _authDataProvider = authDataProvider;
     }
 
-    public async Task<User?> GetAuthenticatedUser()
+    public async Task<Domain.Entities.TinyPath.User?> GetAuthenticatedUser()
     {
         var userSessionId = GetSessionUserId();
 
         var user = await _dbContext.Sessions
             .Include(s => s.User)
+            .Include(sub => sub.User.Subscription)
             .Where(s => s.Id == userSessionId)
             .Where(s => s.Expires > DateTimeOffset.UtcNow)
             .Select(su => su.User)
@@ -31,7 +30,7 @@ public class CurrentUserProvider : ICurrentUserProvider
         return user;
     }
 
-    public async Task<User?> GetPremiumUser()
+    public async Task<Domain.Entities.TinyPath.User?> GetPremiumUser()
     {
         var user = await GetAuthenticatedUser();
         

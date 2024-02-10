@@ -27,4 +27,16 @@ public abstract class EmailSenderSchemas
         
         return (subject, content);
     }
+    
+    public static (string subject, string content) EmailWithSubscriptionInvoice(string link)
+    {
+        var subject = "Your subscription invoice";
+        
+        var content = $"Dear User,<br /><br />" +
+                      $"You can find the link to your subscription invoice below:<br /><br />" +
+                      $"<a href=\"{link}\">Click to check your invoice</a><br /><br />" +
+                      $"Sincerely,<br />Your Application Team";
+        
+        return (subject, content);
+    }
 }

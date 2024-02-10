@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TinyPath.Application.Exceptions;
 using TinyPath.Application.Interfaces;
 using TinyPath.Application.Logic.Abstractions;
+using TinyPath.Application.Services.Hangfire;
 using TinyPath.Domain.Entities.TinyPath;
 
 namespace TinyPath.Application.Logic.User;
@@ -27,12 +28,14 @@ public abstract class LoginCommand
         private readonly IPasswordManager _passwordManager;
         private readonly IGetJwtOptions _getJwtOptions;
         private readonly IJwtManager _jwtManager;
+        private readonly IBackgroundServices _backgroundServices;
         
-        public Handler(IApplicationDbContext dbContext, IPasswordManager passwordManager, IGetJwtOptions getJwtOptions, IJwtManager jwtManager) : base(dbContext)
+        public Handler(IApplicationDbContext dbContext, IPasswordManager passwordManager, IGetJwtOptions getJwtOptions, IJwtManager jwtManager, IBackgroundServices backgroundServices) : base(dbContext)
         {
             _passwordManager = passwordManager;
             _getJwtOptions = getJwtOptions;
             _jwtManager = jwtManager;
+            _backgroundServices = backgroundServices;
         }
 
         public async Task<Response> Handle(Request request, CancellationToken cancellationToken)
@@ -79,7 +82,7 @@ public abstract class LoginCommand
                 user.Session = new Session
                 {
                     Expires = DateTimeOffset.UtcNow.AddMinutes(sessionUserExpires),
-                    User = user,
+                    User = user
                 };
                 
                 _dbContext.Sessions.Add(user.Session);
@@ -105,6 +108,10 @@ public abstract class LoginCommand
             
             var accessToken = _jwtManager.GenerateToken(user.Id, user.Session.Id);
             
+            var jobId = _backgroundServices.DeleteExpiredSessions(user.Session.Id, sessionUserExpires);
+            
+            user.Session.HangfireId = jobId;
+
             await _dbContext.SaveChangesAsync();
             
             return new Response { Token = accessToken, RefreshToken = user.RefreshToken.Token};

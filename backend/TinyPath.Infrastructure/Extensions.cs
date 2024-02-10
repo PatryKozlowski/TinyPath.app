@@ -7,6 +7,7 @@ using TinyPath.Infrastructure.Persistence.GeoIp;
 using TinyPath.Infrastructure.Persistence.Hangfire;
 using TinyPath.Infrastructure.Persistence.TinyPath;
 using TinyPath.Infrastructure.Sender;
+using TinyPath.Infrastructure.Stripe;
 
 namespace TinyPath.Infrastructure;
 
@@ -22,6 +23,7 @@ public static class Extensions
         services.AddScoped(typeof(IPasswordHasher<>), typeof(PasswordHasher<>));
         services.AddScoped<IPasswordManager, PasswordManager>();
         services.AddHangfireConfiguration(configuration);
+        services.AddStripe(configuration);
         
         return services;
     }

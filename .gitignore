@@ -10,4 +10,7 @@ backend/TinyPath.WebApi/appsettings.Development.json
 database/TinyPath.db/bin/
 database/TinyPath.db/obj/
 backend/.idea/
+frontend/node_modules
+frontend/.idea/
+frontend/.nuxt
 .DS_Store

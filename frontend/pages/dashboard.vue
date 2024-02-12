@@ -4,8 +4,8 @@
     </div>
 </template>
 
-<script>
-definePageMeta({
-    layout: "dashboard"
-})
+<script lang="ts">
+    definePageMeta({
+        layout: "dashboard"
+    })
 </script>

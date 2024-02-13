@@ -71,6 +71,16 @@ if (app.Environment.IsDevelopment())
         .CreateLogger();
 }
 
+app.UseCors(builder => builder
+    .WithOrigins(app.Configuration.GetValue<string>("WebClientUrl") ?? "http://localhost:3000")
+    .WithOrigins(app.Configuration.GetSection("AdditionalCorsOrigins").Get<string[]>() ?? Array.Empty<string>())
+    .WithOrigins((Environment.GetEnvironmentVariable("AdditionalCorsOrigins") ?? "").Split(",")
+        .Where(h => !string.IsNullOrEmpty(h)).Select(h => h.Trim()).ToArray())
+    .AllowAnyHeader()
+    .AllowCredentials()
+    .AllowAnyMethod()
+);
+
 app.UseAuthorization();
 
 app.MapControllers();

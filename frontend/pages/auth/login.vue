@@ -10,10 +10,10 @@
         <Icon name="lucide:user" class="w-6 h-6" />
         <h2>Login</h2>
       </div>
-      <form @submit.prevent="onSubmit" class="space-y-3 p-4">
+      <form class="space-y-3 p-4" @submit.prevent="onSubmit">
         <FormField v-slot="{ componentField }" name="email" class="mb-4">
           <FormItem class="flex flex-col">
-            <FormLabel class="text-sm mb-2 text-white">Email</FormLabel>
+            <FormLabel class="text-sm mb-2 text-white"> Email </FormLabel>
             <FormControl>
               <Input
                 type="text"
@@ -36,10 +36,10 @@
                   class="border-none rounded-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
                 />
                 <Button
-                  type="button"
-                  @click="toggleHidden"
-                  variant="secondary"
                   class="flex h-10 px-3 py-2 text-sm rounded-none bg-slate-200"
+                  type="button"
+                  variant="secondary"
+                  @click="toggleHidden"
                 >
                   <Icon
                     :name="hiddenPassword ? 'lucide:eye' : 'lucide:eye-off'"
@@ -48,26 +48,29 @@
                 </Button>
               </div>
             </FormControl>
-            <div class="text-red-500 h-6">{{ errors.password }}</div>
+            <div class="text-red-500 h-6">
+              {{ errors.password }}
+            </div>
           </FormItem>
         </FormField>
         <Button
           :disbaled="isLoading"
           type="submit"
           class="w-full bg-violet-500 hover:bg-gray-700 transition-colors duration-300"
-          >{{ isLoading ? "Loading" : "Go !" }}</Button
         >
+          {{ isLoading ? 'Loading' : 'Go !' }}
+        </Button>
       </form>
       <div class="flex w-full justify-center mt-4 flex-col md:flex-row">
         <Button variant="link" size="sm" class="text-white text-sm">
-          <NuxtLink to="/auth/register" class="text-white text-sm"
-            >Do you need account?</NuxtLink
-          >
+          <NuxtLink to="/auth/register" class="text-white text-sm">
+            Do you need account?
+          </NuxtLink>
         </Button>
         <Button variant="link" size="sm">
-          <NuxtLink to="/auth/forgotpassword" class="text-white text-sm"
-            >I dont remeber my password</NuxtLink
-          >
+          <NuxtLink to="/auth/forgotpassword" class="text-white text-sm">
+            I dont remeber my password
+          </NuxtLink>
         </Button>
       </div>
     </div>
@@ -75,73 +78,62 @@
 </template>
 
 <script setup lang="ts">
-interface Login {
-  email: string;
-  password: string;
-}
+import { useForm } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import * as z from 'zod'
 
-import { useForm } from "vee-validate";
-import { toTypedSchema } from "@vee-validate/zod";
-import * as z from "zod";
+interface Login {
+  email: string
+  password: string
+}
 
 const formSchemaLogin = toTypedSchema(
   z.object({
     email: z
       .string()
-      .min(1, "Email is required")
-      .email("Please enter a valid email address"),
+      .min(1, 'Email is required')
+      .email('Please enter a valid email address'),
     password: z
       .string()
-      .min(1, "Password is required")
-      .min(8, "Password must be at least 8 characters long")
-      .regex(/[A-Z]/, "Password must contain an uppercase letter")
-      .regex(/[0-9]/, "Password must contain a number")
+      .min(1, 'Password is required')
+      .min(8, 'Password must be at least 8 characters long')
+      .regex(/[A-Z]/, 'Password must contain an uppercase letter')
+      .regex(/[0-9]/, 'Password must contain a number')
       .regex(
-        /[!@#$%^&*()_+}{\":;'?/>.<,]/,
-        "Password must contain a special character"
-      ),
+        /[!@#$%^&*()_+}{":;'?/>.<,]/,
+        'Password must contain a special character'
+      )
   })
-);
+)
 
 const { handleSubmit, errors } = useForm<Login>({
-  validationSchema: formSchemaLogin,
-});
+  validationSchema: formSchemaLogin
+})
 
-const hiddenPassword = ref<boolean>(true);
+const hiddenPassword = ref<boolean>(true)
 
 const toggleHidden = () => {
-  hiddenPassword.value = !hiddenPassword.value;
-};
+  hiddenPassword.value = !hiddenPassword.value
+}
 
 const onSubmit = handleSubmit((values, action) => {
-  console.log(values);
-  login(values);
-  action.resetForm();
-});
+  login(values)
+  action.resetForm()
+})
 
-const isLoading = ref<boolean>(false);
+const isLoading = ref<boolean>(false)
 
 const login = (formValue: Login) => {
-  isLoading.value = true;
+  isLoading.value = true
 
-  useWebApiFetch("/auth/login", {
-    method: "POST",
+  useWebApiFetch('/auth/login', {
+    method: 'POST',
     body: {
       email: formValue.email,
-      password: formValue.password,
-    },
-    onSuccess: (response) => {
-      console.log(response);
-    },
+      password: formValue.password
+    }
+  }).finally(() => {
+    isLoading.value = false
   })
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => {
-      console.log(error);
-    })
-    .finally(() => {
-      isLoading.value = false;
-    });
-};
+}
 </script>

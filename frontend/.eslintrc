@@ -1,3 +1,16 @@
 {
-  "extends": ["@nuxtjs/eslint-config-typescript"]
+  "extends": ["@nuxtjs/eslint-config-typescript"],
+  "rules": {
+    "space-before-function-paren": "off",
+    "vue/singleline-html-element-content-newline": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "vue/max-attributes-per-line": "off",
+    "arrow-parens": "off"
+  },
+  "ignorePatterns": [
+    "**/node_modules/*",
+    "**/dist/*",
+    "**/coverage/*",
+    "**/components/ui/*"
+  ]
 }

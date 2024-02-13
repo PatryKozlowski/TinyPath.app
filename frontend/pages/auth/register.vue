@@ -10,7 +10,7 @@
         <Icon name="lucide:user" class="w-6 h-6" />
         <h2>Register</h2>
       </div>
-      <form @submit.prevent="onSubmit" class="space-y-3 p-4">
+      <form class="space-y-3 p-4" @submit.prevent="onSubmit">
         <FormField v-slot="{ componentField }" name="email" class="mb-4">
           <FormItem class="flex flex-col">
             <FormLabel class="text-sm mb-2 text-white">Email</FormLabel>
@@ -37,10 +37,10 @@
                   class="border-none rounded-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
                 />
                 <Button
-                  type="button"
-                  @click="toggleHidden('password')"
-                  variant="secondary"
                   class="flex h-10 px-3 py-2 text-sm rounded-none bg-slate-200"
+                  type="button"
+                  variant="secondary"
+                  @click="toggleHidden('password')"
                 >
                   <Icon
                     :name="hidden.password ? 'lucide:eye' : 'lucide:eye-off'"
@@ -49,7 +49,9 @@
                 </Button>
               </div>
             </FormControl>
-            <div class="text-red-500 h-6">{{ errors.password }}</div>
+            <div class="text-red-500 h-6">
+              {{ errors.password }}
+            </div>
           </FormItem>
         </FormField>
         <FormField
@@ -58,9 +60,9 @@
           class="mb-4"
         >
           <FormItem>
-            <FormLabel class="text-sm mb-2 text-white"
-              >Repeat password</FormLabel
-            >
+            <FormLabel class="text-sm mb-2 text-white">
+              Repeat password
+            </FormLabel>
             <FormControl>
               <div class="flex rounded-md border border-slate-200">
                 <Input
@@ -70,10 +72,10 @@
                   class="border-none rounded-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
                 />
                 <Button
-                  type="button"
-                  @click="toggleHidden('repeatPassword')"
-                  variant="secondary"
                   class="flex h-10 px-3 py-2 text-sm rounded-none bg-slate-200"
+                  type="button"
+                  variant="secondary"
+                  @click="toggleHidden('repeatPassword')"
                 >
                   <Icon
                     :name="
@@ -84,25 +86,28 @@
                 </Button>
               </div>
             </FormControl>
-            <div class="text-red-500 h-6">{{ errors.repeatPassword }}</div>
+            <div class="text-red-500 h-6">
+              {{ errors.repeatPassword }}
+            </div>
           </FormItem>
         </FormField>
         <Button
           type="submit"
           class="w-full bg-violet-500 hover:bg-gray-700 transition-colors duration-300"
-          >Go !</Button
         >
+          Go !
+        </Button>
       </form>
       <div class="flex w-full justify-center mt-4">
         <Button variant="link" size="sm">
-          <NuxtLink to="/auth/login" class="text-white text-sm"
-            >Do you want to login?</NuxtLink
-          >
+          <NuxtLink to="/auth/login" class="text-white text-sm">
+            Do you want to login?
+          </NuxtLink>
         </Button>
         <Button variant="link" size="sm">
-          <NuxtLink to="/auth/forgotpassword" class="text-white text-sm"
-            >I dont remeber my password</NuxtLink
-          >
+          <NuxtLink to="/auth/forgotpassword" class="text-white text-sm">
+            I dont remeber my password
+          </NuxtLink>
         </Button>
       </div>
     </div>
@@ -110,70 +115,69 @@
 </template>
 
 <script setup lang="ts">
+import { useForm } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import * as z from 'zod'
+
 interface Register {
-  email: string;
-  password: string;
-  repeatPassword: string;
+  email: string
+  password: string
+  repeatPassword: string
 }
 
 interface Hidden {
-  password: boolean;
-  repeatPassword: boolean;
+  password: boolean
+  repeatPassword: boolean
 }
-
-import { useForm } from "vee-validate";
-import { toTypedSchema } from "@vee-validate/zod";
-import * as z from "zod";
 
 const formSchemaRegister = toTypedSchema(
   z
     .object({
       email: z
         .string()
-        .min(1, "Email is required")
-        .email("Please enter a valid email address"),
+        .min(1, 'Email is required')
+        .email('Please enter a valid email address'),
       password: z
         .string()
-        .min(1, "Password is required")
-        .min(8, "Password must be at least 8 characters long")
-        .regex(/[A-Z]/, "Password must contain an uppercase letter")
-        .regex(/[0-9]/, "Password must contain a number")
+        .min(1, 'Password is required')
+        .min(8, 'Password must be at least 8 characters long')
+        .regex(/[A-Z]/, 'Password must contain an uppercase letter')
+        .regex(/[0-9]/, 'Password must contain a number')
         .regex(
-          /[!@#$%^&*()_+}{\":;'?/>.<,]/,
-          "Password must contain a special character"
+          /[!@#$%^&*()_+}{":;'?/>.<,]/,
+          'Password must contain a special character'
         ),
       repeatPassword: z
         .string()
-        .min(1, "Repeat password is required")
-        .min(8, "Password must be at least 8 characters long")
-        .regex(/[A-Z]/, "Password must contain an uppercase letter")
-        .regex(/[0-9]/, "Password must contain a number")
+        .min(1, 'Repeat password is required')
+        .min(8, 'Password must be at least 8 characters long')
+        .regex(/[A-Z]/, 'Password must contain an uppercase letter')
+        .regex(/[0-9]/, 'Password must contain a number')
         .regex(
-          /[!@#$%^&*()_+}{\":;'?/>.<,]/,
-          "Password must contain a special character"
-        ),
+          /[!@#$%^&*()_+}{":;'?/>.<,]/,
+          'Password must contain a special character'
+        )
     })
     .refine((data) => data.password === data.repeatPassword, {
-      message: "Passwords do not match",
-      path: ["repeatPassword"],
+      message: 'Passwords do not match',
+      path: ['repeatPassword']
     })
-);
+)
 
 const hidden = ref<Hidden>({
   password: true,
-  repeatPassword: true,
-});
+  repeatPassword: true
+})
 
 const toggleHidden = (field: keyof Hidden) => {
-  hidden.value[field] = !hidden.value[field];
-};
+  hidden.value[field] = !hidden.value[field]
+}
 
 const { handleSubmit, errors } = useForm<Register>({
-  validationSchema: formSchemaRegister,
-});
+  validationSchema: formSchemaRegister
+})
 
 const onSubmit = handleSubmit((values, action) => {
-  console.log(values);
-  action.resetForm();
-});
+  action.resetForm()
+})
 </script>

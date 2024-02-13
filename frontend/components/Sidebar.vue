@@ -1,64 +1,62 @@
 <template>
-    <div class="space-y-4 py-4 flex flex-col h-full bg-[#111827] text-white">
-        <div class="px-3 py-2 flex-1">
-            <Logo :is-close="isClose"/>
-            <Button 
-                class="w-full"
-                size="sm"
-                variant="secondary">
-                <template v-if="isClose">
-                    <Icon name="lucide:plus" class="h-5 w-5"/>
-                </template>
-                <template v-else>
-                    Create new
-                </template>
-            </Button>
-            <Separator class="my-4"/>
-            <div class="space-y-3">
-                <template v-for="(link, index) in sidebarLinks" :key="index">
-                    <NuxtLink 
-                        :to="link.route"
-                        class="text-sm group flex justify-start w-full px-3 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200"
-                        :class="{'bg-gray-600': currentRoute.path === link.route}"
-                    >
-                    <div 
-                        class="flex items-center"
-                        :class="{'flex justify-center w-full': isClose}"
-                    >
-                        <Icon 
-                            :name="link.icon" 
-                            :class="{
-                                'h-5 w-5': true,
-                                [link.color]: true,
-                                'mr-3': !isClose
-                            }"
-                        />
-                        <p :class="{'hidden': isClose}" class="font-medium whitespace-nowrap">
-                            {{ link.label }}
-                        </p>
-                    </div>
-                    </NuxtLink>
-                    <Separator v-if="index === sidebarLinks.length - 2" class="my-4"/>
-                </template>
+  <div class="space-y-4 py-4 flex flex-col h-full bg-[#111827] text-white">
+    <div class="px-3 py-2 flex-1">
+      <Logo :is-close="isClose" />
+      <Button class="w-full" size="sm" variant="secondary">
+        <template v-if="isClose">
+          <Icon name="lucide:plus" class="h-5 w-5" />
+        </template>
+        <template v-else> Create new </template>
+      </Button>
+      <Separator class="my-4" />
+      <div class="space-y-3">
+        <template v-for="(link, index) in sidebarLinks" :key="index">
+          <NuxtLink
+            :to="link.route"
+            class="text-sm group flex justify-start w-full px-3 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200"
+            :class="{ 'bg-gray-600': currentRoute.path === link.route }"
+          >
+            <div
+              class="flex items-center"
+              :class="{ 'flex justify-center w-full': isClose }"
+            >
+              <Icon
+                :name="link.icon"
+                :class="{
+                  'h-5 w-5': true,
+                  [link.color]: true,
+                  'mr-3': !isClose,
+                }"
+              />
+              <p
+                :class="{ hidden: isClose }"
+                class="font-medium whitespace-nowrap"
+              >
+                {{ link.label }}
+              </p>
             </div>
-        </div>
-        <!-- Free content  -->
+          </NuxtLink>
+          <Separator v-if="index === sidebarLinks.length - 2" class="my-4" />
+        </template>
+      </div>
     </div>
+    <!-- Free content  -->
+  </div>
 </template>
 
 <script setup lang="ts">
-    const currentRoute = useRoute()
+const currentRoute = useRoute();
 
-    const props = defineProps({
-        closeSidebar: Boolean
-    })
+const props = defineProps({
+  closeSidebar: Boolean,
+});
 
-    const isClose = ref(props.closeSidebar);
+const isClose = ref(props.closeSidebar);
 
-    watch(
-        () => props.closeSidebar,
-        (newValue) => {
-            isClose.value = newValue;
-        }
-    )
+watch(
+  () => props.closeSidebar,
+  (newValue) => {
+    isClose.value = newValue;
+  }
+);
 </script>

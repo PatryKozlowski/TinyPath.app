@@ -25,7 +25,7 @@
                 :class="{
                   'h-5 w-5': true,
                   [link.color]: true,
-                  'mr-3': !isClose,
+                  'mr-3': !isClose
                 }"
               />
               <p
@@ -45,18 +45,18 @@
 </template>
 
 <script setup lang="ts">
-const currentRoute = useRoute();
+const currentRoute = useRoute()
 
 const props = defineProps({
-  closeSidebar: Boolean,
-});
+  closeSidebar: Boolean
+})
 
-const isClose = ref(props.closeSidebar);
+const isClose = ref(props.closeSidebar)
 
 watch(
   () => props.closeSidebar,
   (newValue) => {
-    isClose.value = newValue;
+    isClose.value = newValue
   }
-);
+)
 </script>

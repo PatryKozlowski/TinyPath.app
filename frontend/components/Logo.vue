@@ -11,15 +11,15 @@
 
 <script setup lang="ts">
 const props = defineProps({
-  isClose: Boolean,
-});
+  isClose: Boolean
+})
 
-const isClose = ref(props.isClose);
+const isClose = ref(props.isClose)
 
 watch(
   () => props.isClose,
   (newValue) => {
-    isClose.value = newValue;
+    isClose.value = newValue
   }
-);
+)
 </script>

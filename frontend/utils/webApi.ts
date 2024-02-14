@@ -11,13 +11,25 @@ type HTTPMethod =
   | 'TRACE'
   | 'PATCH'
 
+interface OnResponse {
+  request: RequestInfo
+  response: any
+  options: RequestInit
+}
+
 interface FetcherConfig {
   readonly method: HTTPMethod
   readonly body?: object
   readonly config?: RequestInit
   readonly params?: object
   readonly query?: object
+  readonly onRequest?: (request: Request, options: RequestInit) => void
   readonly onSuccess?: (response: any) => void
+  readonly onResponseError?: ({
+    request,
+    response,
+    options
+  }: OnResponse) => void
 }
 
 export const useWebApiFetch = function (request: string, opts: FetcherConfig) {

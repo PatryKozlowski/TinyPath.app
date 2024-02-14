@@ -81,11 +81,14 @@
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 interface Login {
   email: string
   password: string
 }
+
+const { toast } = useToast()
 
 const formSchemaLogin = toTypedSchema(
   z.object({
@@ -131,6 +134,12 @@ const login = (formValue: Login) => {
     body: {
       email: formValue.email,
       password: formValue.password
+    },
+    onResponseError({ request, response, options }) {
+      toast({
+        title: 'Information',
+        description: response._data.error
+      })
     }
   }).finally(() => {
     isLoading.value = false

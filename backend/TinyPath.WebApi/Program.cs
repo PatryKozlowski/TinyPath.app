@@ -61,7 +61,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    
+
     Log.Logger = new LoggerConfiguration()
         .Enrich.WithProperty("Application", $"DEV-{APP_NAME}")
         .Enrich.WithProperty("MachineName", Environment.MachineName)

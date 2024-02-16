@@ -20,7 +20,8 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      BASE_URL: process.env.NUXT_PUBLIC_BASE_URL ?? 'http://localhist:5264'
+      BASE_URL:
+        process.env.NUXT_PUBLIC_BASE_URL ?? 'https://api.kozlowskip.pl/tinypath'
     }
   }
 })

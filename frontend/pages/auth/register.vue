@@ -5,12 +5,12 @@
     <Logo />
     <div class="md:w-[400px] w-[350px] bg-[#111827] p-4 rounded-lg">
       <div
-        class="text-white flex justify-center items-center space-x-4 text-xl mb-4"
+        class="text-white flex justify-center items-center space-x-4 text-xl my-4"
       >
         <Icon name="lucide:user" class="w-6 h-6" />
-        <h2>Register</h2>
+        <h2 class="text-2xl">Register</h2>
       </div>
-      <form class="space-y-3 p-4" @submit.prevent="onSubmit">
+      <form class="space-y-3 p-2 md:p-4" @submit.prevent="onSubmit">
         <FormField v-slot="{ componentField }" name="email" class="mb-4">
           <FormItem class="flex flex-col">
             <FormLabel class="text-sm mb-2 text-white">Email</FormLabel>
@@ -22,7 +22,7 @@
                 class="focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
               />
             </FormControl>
-            <div class="text-red-500 h-6">{{ errors.email }}</div>
+            <div class="text-red-500 h-6 text-sm">{{ errors.email }}</div>
           </FormItem>
         </FormField>
         <FormField v-slot="{ componentField }" name="password" class="mb-4">
@@ -49,7 +49,7 @@
                 </Button>
               </div>
             </FormControl>
-            <div class="text-red-500 h-6">
+            <div class="text-red-500 h-6 text-sm">
               {{ errors.password }}
             </div>
           </FormItem>
@@ -86,7 +86,7 @@
                 </Button>
               </div>
             </FormControl>
-            <div class="text-red-500 h-6">
+            <div class="text-red-500 h-6 text-sm">
               {{ errors.repeatPassword }}
             </div>
           </FormItem>
@@ -100,12 +100,15 @@
       </form>
       <div class="flex w-full justify-center mt-4">
         <Button variant="link" size="sm">
-          <NuxtLink to="/auth/login" class="text-white text-sm">
+          <NuxtLink to="/auth/login" class="text-white text-xs md:text-sm">
             Do you want to login?
           </NuxtLink>
         </Button>
         <Button variant="link" size="sm">
-          <NuxtLink to="/auth/forgotpassword" class="text-white text-sm">
+          <NuxtLink
+            to="/auth/forgotpassword"
+            class="text-white text-xs md:text-sm"
+          >
             I dont remeber my password
           </NuxtLink>
         </Button>
@@ -129,6 +132,16 @@ interface Hidden {
   password: boolean
   repeatPassword: boolean
 }
+
+useHead({
+  title: 'TinyPath - Register',
+  meta: [
+    {
+      name: 'description',
+      content: 'Register page'
+    }
+  ]
+})
 
 const formSchemaRegister = toTypedSchema(
   z

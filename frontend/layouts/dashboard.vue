@@ -19,8 +19,7 @@
     </div>
     <div :class="wrapperClass">
       <Navbar />
-      <main class="px-10">
-        hello contnetn
+      <main class="p-10">
         <slot />
       </main>
     </div>

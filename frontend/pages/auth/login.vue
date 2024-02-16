@@ -5,10 +5,10 @@
     <Logo />
     <div class="md:w-[400px] w-[350px] bg-[#111827] p-4 rounded-lg">
       <div
-        class="text-white flex justify-center items-center space-x-4 text-xl mb-4"
+        class="text-white flex justify-center items-center space-x-4 text-xl my-4"
       >
         <Icon name="lucide:user" class="w-6 h-6" />
-        <h2>Login</h2>
+        <h2 class="text-2xl">Login</h2>
       </div>
       <form class="space-y-3 p-4" @submit.prevent="onSubmit">
         <FormField v-slot="{ componentField }" name="email" class="mb-4">
@@ -21,7 +21,7 @@
                 v-bind="componentField"
               />
             </FormControl>
-            <div class="text-red-500 h-6">{{ errors.email }}</div>
+            <div class="text-red-500 h-6 text-sm">{{ errors.email }}</div>
           </FormItem>
         </FormField>
         <FormField v-slot="{ componentField }" name="password" class="mb-4">
@@ -48,17 +48,20 @@
                 </Button>
               </div>
             </FormControl>
-            <div class="text-red-500 h-6">
+            <div class="text-red-500 h-6 text-sm">
               {{ errors.password }}
             </div>
           </FormItem>
         </FormField>
         <Button
-          :disbaled="isLoading"
+          :disabled="isLoading"
           type="submit"
           class="w-full bg-violet-500 hover:bg-gray-700 transition-colors duration-300"
         >
-          {{ isLoading ? 'Loading' : 'Go !' }}
+          <template v-if="isLoading">
+            <Spinner />
+          </template>
+          <template v-else> Go ! </template>
         </Button>
       </form>
       <div class="flex w-full justify-center mt-4 flex-col md:flex-row">
@@ -88,7 +91,27 @@ interface Login {
   password: string
 }
 
+interface LoginResponse {
+  token: string
+  refreshToken: string
+}
+
+useHead({
+  title: 'TinyPath - Login',
+  meta: [
+    {
+      name: 'description',
+      content: 'Login page'
+    }
+  ]
+})
+const runTimeConfig = useRuntimeConfig()
+
+const LOGIN_ENDPOINT_API = `${runTimeConfig.public.BASE_URL}/api/User/LoginCommand`
+const REDIRETECT_ENDPOINT = '/dashboard'
+
 const { toast } = useToast()
+const router = useRouter()
 
 const formSchemaLogin = toTypedSchema(
   z.object({
@@ -126,22 +149,31 @@ const onSubmit = handleSubmit((values, action) => {
 
 const isLoading = ref<boolean>(false)
 
-const login = (formValue: Login) => {
+const login = async (formValue: Login) => {
   isLoading.value = true
 
-  useWebApiFetch('/auth/login', {
-    method: 'POST',
-    body: {
-      email: formValue.email,
-      password: formValue.password
-    },
-    onResponseError({ request, response, options }) {
-      toast({
-        title: 'Information',
-        description: response._data.error
+  await useAsyncData<LoginResponse>(
+    'login',
+    async () =>
+      await $fetch(LOGIN_ENDPOINT_API, {
+        method: 'POST',
+        body: {
+          email: formValue.email,
+          password: formValue.password
+        },
+        onResponseError({ request, response, options }) {
+          toast({
+            description: response._data.error,
+            variant: 'success'
+          })
+        },
+        onResponse({ request, response, options }) {
+          if (response.status === 200) {
+            router.push(REDIRETECT_ENDPOINT)
+          }
+        }
       })
-    }
-  }).finally(() => {
+  ).finally(() => {
     isLoading.value = false
   })
 }

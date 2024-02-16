@@ -2,12 +2,14 @@
   <div class="space-y-4 py-4 flex flex-col h-full bg-[#111827] text-white">
     <div class="px-3 py-2 flex-1">
       <Logo :is-close="isClose" />
-      <Button class="w-full" size="sm" variant="secondary">
-        <template v-if="isClose">
-          <Icon name="lucide:plus" class="h-5 w-5" />
-        </template>
-        <template v-else> Create new </template>
-      </Button>
+      <NuxtLink to="/dashboard/create-link">
+        <Button class="w-full" size="sm" variant="secondary">
+          <template v-if="isClose">
+            <Icon name="lucide:plus" class="h-5 w-5" />
+          </template>
+          <template v-else> Create new </template>
+        </Button>
+      </NuxtLink>
       <Separator class="my-4" />
       <div class="space-y-3">
         <template v-for="(link, index) in sidebarLinks" :key="index">

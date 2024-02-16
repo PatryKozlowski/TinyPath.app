@@ -5,7 +5,8 @@
     "vue/singleline-html-element-content-newline": "off",
     "@typescript-eslint/no-unused-vars": "off",
     "vue/max-attributes-per-line": "off",
-    "arrow-parens": "off"
+    "arrow-parens": "off",
+    "vue/multi-word-component-names": "off"
   },
   "ignorePatterns": [
     "**/node_modules/*",

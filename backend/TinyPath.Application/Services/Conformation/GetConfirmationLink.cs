@@ -16,4 +16,9 @@ public class GetConfirmationLink : IGetConfirmationLink
         var link = _confirmatioOptions.EmailConfirmationUrl + confirmationToken;
         return link;
     }
+
+    public string RedirectConfirmationLink()
+    {
+        return _confirmatioOptions.RedirectConfirmationUrl;
+    }
 }

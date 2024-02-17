@@ -41,7 +41,7 @@ public class CurrentUserProvider : ICurrentUserProvider
         
         return user?.Subscription is not null && user.Subscription.Expires > DateTimeOffset.UtcNow ? user : null;
     }
-    
+
     private Guid? GetSessionUserId()
     {
         var userSessionId = _authDataProvider.GetSessionUserId();

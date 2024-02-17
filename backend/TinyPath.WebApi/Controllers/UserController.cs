@@ -27,7 +27,14 @@ public class UserController : BaseController
     [HttpGet]
     public async Task<ActionResult> ConfirmEmailCommand([FromQuery] ConfirmEmailCommand.Request request)
     {
-        return await ProcessRequestAsync(request);
+        var resposne = await _mediator.Send(request);
+        
+        if (Response.StatusCode == 200)
+        {
+            return Redirect(resposne.RedirectUrl);
+        }
+        
+        return Ok(resposne);
     }
     
     [HttpPost]
@@ -71,6 +78,12 @@ public class UserController : BaseController
         }
            
         return Ok(response);
+    }
+    
+    [HttpGet]
+    public async Task<ActionResult> GetAuthenticatedUserCommand()
+    {
+        return await ProcessRequestAsync(new GetAuthenticatedUserCommand.Request());
     }
     
     private void SetTokenCookie(string token, bool isRefreshToken = false)

@@ -1,6 +1,6 @@
 <template>
   <DashboardWrapper>
-    <DashboardTitle title="Create new link" />
+    <DashboardTitle title="Create guest link" />
     <form
       v-if="!isLoading && createdLink.length === 0"
       class="space-y-6"
@@ -21,6 +21,20 @@
           <div class="text-red-500 h-6">{{ errors.url }}</div>
         </FormItem>
       </FormField>
+      <div
+        class="text-slate-400 flex"
+        v-if="!isAuthenticated && !guestStore.isLoading && links !== 0"
+      >
+        <p>You can only create</p>
+        <p class="mx-1 text-black font-semibold">
+          {{ links }}
+        </p>
+        <p>more links</p>
+      </div>
+      <div v-if="!isAuthenticated && !guestStore.isLoading && links === 0">
+        <p class="text-red-500">You can't create more links</p>
+      </div>
+      <Spinner class="text-center" v-else-if="!isAuthenticated" />
       <FormField v-slot="{ componentField }" name="title" class="mb-4">
         <FormItem class="flex flex-col">
           <FormLabel class="mb-4 text-sm text-black font-light">
@@ -36,7 +50,11 @@
       <div class="flex w-full justify-center flex-col md:flex-row">
         <Button
           type="submit"
-          :disabled="isLoading"
+          :disabled="
+            isLoading ||
+            guestStore.isLoading ||
+            (links === 0 && !isAuthenticated)
+          "
           class="w-full bg-violet-500 hover:bg-gray-700 transition-colors duration-300"
         >
           <template v-if="isLoading">
@@ -51,6 +69,10 @@
       :createdLink="createdLink"
       v-else-if="!isLoading && createdLink.length > 0"
     />
+    <GuestEmailForLink
+      v-if="!isAuthenticated && createdLink.length > 0 && !isSendEmailForLink"
+    />
+    <p v-else-if="isSendEmailForLink" class="text-black">Email was send</p>
   </DashboardWrapper>
 </template>
 
@@ -70,12 +92,11 @@ interface CreateLinkResponse {
 }
 
 definePageMeta({
-  layout: 'dashboard',
-  middleware: ['auth']
+  layout: 'dashboard'
 })
 
 useHead({
-  title: 'TinyPath - Dashboard | Create',
+  title: 'TinyPath - Dashboard | Create Guest Link',
   meta: [
     {
       name: 'description',
@@ -89,6 +110,10 @@ const { toast } = useToast()
 const createdLink = ref('')
 const isLoading = ref(false)
 const authStore = useAuthStore()
+const { isAuthenticated } = storeToRefs(authStore)
+
+const guestStore = useGuestStore()
+const { links, isSendEmailForLink } = storeToRefs(guestStore)
 
 const CREATE_ENDPOINT_API = `${runTimeConfig.public.BASE_URL}/api/Link/CreateShortLinkCommand`
 
@@ -126,17 +151,12 @@ const create = async (values: CreateLink) => {
   const cleanedValues = title === undefined ? rest : values
 
   await useAsyncData<CreateLinkResponse>(
-    'createLink',
+    'createGuestLink',
     async () =>
       await $fetch(CREATE_ENDPOINT_API, {
         method: 'POST',
         body: {
           url: cleanedValues.url
-        },
-        onRequest({ request, options }) {
-          options.headers = {
-            Authorization: `Bearer ${authStore.user?.token}`
-          }
         },
         onResponseError({ request, response, options }) {
           createdLink.value = ''
@@ -157,5 +177,11 @@ const create = async (values: CreateLink) => {
 const onSubmit = handleSubmit((values, action) => {
   create(values)
   action.resetForm()
+})
+
+onMounted(async () => {
+  if (!isAuthenticated.value) {
+    await guestStore.loadGuestData()
+  }
 })
 </script>

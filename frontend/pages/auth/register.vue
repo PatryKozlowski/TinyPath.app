@@ -92,10 +92,14 @@
           </FormItem>
         </FormField>
         <Button
+          :disabled="isLoading"
           type="submit"
           class="w-full bg-violet-500 hover:bg-gray-700 transition-colors duration-300"
         >
-          Go !
+          <template v-if="isLoading">
+            <Spinner />
+          </template>
+          <template v-else> Go ! </template>
         </Button>
       </form>
       <div class="flex w-full justify-center mt-4">
@@ -121,6 +125,7 @@
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
+import { useToast } from '@/components/ui/toast/use-toast'
 
 interface Register {
   email: string
@@ -142,6 +147,15 @@ useHead({
     }
   ]
 })
+
+const { toast } = useToast()
+const router = useRouter()
+const runTimeConfig = useRuntimeConfig()
+
+const REGISTER_ENDPOINT_API = `${runTimeConfig.public.BASE_URL}/api/User/CreateUserCommand`
+const REDIRETECT_ENDPOINT = '/auth/confirmation'
+
+const isLoading = ref(false)
 
 const formSchemaRegister = toTypedSchema(
   z
@@ -190,7 +204,37 @@ const { handleSubmit, errors } = useForm<Register>({
   validationSchema: formSchemaRegister
 })
 
+const register = async (formValue: Register) => {
+  isLoading.value = true
+  await useAsyncData(
+    'register',
+    async () =>
+      await $fetch(REGISTER_ENDPOINT_API, {
+        method: 'POST',
+        body: {
+          email: formValue.email,
+          password: formValue.password,
+          repeatPassword: formValue.repeatPassword
+        },
+        onResponseError({ request, response, options }) {
+          toast({
+            description: response._data.error,
+            variant: 'destructive'
+          })
+        },
+        onResponse({ request, response, options }) {
+          if (response.status === 200) {
+            router.push(REDIRETECT_ENDPOINT)
+          }
+        }
+      })
+  ).finally(() => {
+    isLoading.value = false
+  })
+}
+
 const onSubmit = handleSubmit((values, action) => {
+  register(values)
   action.resetForm()
 })
 </script>

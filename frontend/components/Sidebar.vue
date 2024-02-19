@@ -48,7 +48,6 @@
 
 <script setup lang="ts">
 const currentRoute = useRoute()
-
 const props = defineProps({
   closeSidebar: Boolean
 })

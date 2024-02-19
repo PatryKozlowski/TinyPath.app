@@ -14,7 +14,7 @@ export const sidebarLinks = [
   {
     label: 'Custom link',
     icon: 'lucide:unlink',
-    route: '/dashboard/links',
+    route: '/dashboard/create-custom-link',
     color: 'text-violet-400'
   },
   {

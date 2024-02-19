@@ -33,6 +33,7 @@
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
@@ -54,6 +55,11 @@ useHead({
 })
 
 const { toast } = useToast()
+const router = useRouter()
+const runTimeConfig = useRuntimeConfig()
+
+const RESEND_ENDPOINT_API = `${runTimeConfig.public.BASE_URL}/api/User/RegenerateConfirmEmailCommand`
+const REDIRETECT_ENDPOINT = '/auth/confirmation'
 
 const formSchemaLogin = toTypedSchema(
   z.object({
@@ -75,34 +81,31 @@ const onSubmit = handleSubmit((values, action) => {
 
 const isLoading = ref<boolean>(false)
 
-const resend = (formValue: Resend) => {
+const resend = async (formValue: Resend) => {
   isLoading.value = true
 
-  useWebApiFetch('/api/User/RegenerateConfirmEmailCommand', {
-    method: 'POST',
-    body: {
-      email: formValue.email
-    },
-    onResponseError({ request, response, options }) {
-      toast({
-        title: 'Information',
-        description: response._data.error,
-        variant: 'destructive'
+  await useAsyncData(
+    'register',
+    async () =>
+      await $fetch(RESEND_ENDPOINT_API, {
+        method: 'POST',
+        body: {
+          email: formValue.email
+        },
+        onResponseError({ request, response, options }) {
+          toast({
+            description: response._data.error,
+            variant: 'destructive'
+          })
+        },
+        onResponse({ request, response, options }) {
+          if (response.status === 200) {
+            router.push(REDIRETECT_ENDPOINT)
+          }
+        }
       })
-    }
+  ).finally(() => {
+    isLoading.value = false
   })
-    .then(() => {
-      toast({
-        title: 'Information',
-        description: 'Email sent successfully',
-        variant: 'success'
-      })
-    })
-    .finally(() => {
-      isLoading.value = false
-    })
-    .finally(() => {
-      isLoading.value = false
-    })
 }
 </script>

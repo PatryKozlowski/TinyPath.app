@@ -54,11 +54,11 @@
           </FormItem>
         </FormField>
         <Button
-          :disabled="isLoading"
+          :disabled="authStore.isLoading"
           type="submit"
           class="w-full bg-violet-500 hover:bg-gray-700 transition-colors duration-300"
         >
-          <template v-if="isLoading">
+          <template v-if="authStore.isLoading">
             <Spinner />
           </template>
           <template v-else> Go ! </template>
@@ -84,16 +84,10 @@
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
-import { useToast } from '@/components/ui/toast/use-toast'
 
 interface Login {
   email: string
   password: string
-}
-
-interface LoginResponse {
-  token: string
-  refreshToken: string
 }
 
 useHead({
@@ -105,13 +99,9 @@ useHead({
     }
   ]
 })
-const runTimeConfig = useRuntimeConfig()
 
-const LOGIN_ENDPOINT_API = `${runTimeConfig.public.BASE_URL}/api/User/LoginCommand`
-const REDIRETECT_ENDPOINT = '/dashboard'
-
-const { toast } = useToast()
-const router = useRouter()
+const authStore = useAuthStore()
+const hiddenPassword = ref<boolean>(true)
 
 const formSchemaLogin = toTypedSchema(
   z.object({
@@ -136,45 +126,12 @@ const { handleSubmit, errors } = useForm<Login>({
   validationSchema: formSchemaLogin
 })
 
-const hiddenPassword = ref<boolean>(true)
-
 const toggleHidden = () => {
   hiddenPassword.value = !hiddenPassword.value
 }
 
-const onSubmit = handleSubmit((values, action) => {
-  login(values)
+const onSubmit = handleSubmit(async (values, action) => {
+  await authStore.login(values)
   action.resetForm()
 })
-
-const isLoading = ref<boolean>(false)
-
-const login = async (formValue: Login) => {
-  isLoading.value = true
-
-  await useAsyncData<LoginResponse>(
-    'login',
-    async () =>
-      await $fetch(LOGIN_ENDPOINT_API, {
-        method: 'POST',
-        body: {
-          email: formValue.email,
-          password: formValue.password
-        },
-        onResponseError({ request, response, options }) {
-          toast({
-            description: response._data.error,
-            variant: 'success'
-          })
-        },
-        onResponse({ request, response, options }) {
-          if (response.status === 200) {
-            router.push(REDIRETECT_ENDPOINT)
-          }
-        }
-      })
-  ).finally(() => {
-    isLoading.value = false
-  })
-}
 </script>

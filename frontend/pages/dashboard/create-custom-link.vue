@@ -1,9 +1,8 @@
 <template>
-  <div>
-    <h1>Dashboard</h1>
-  </div>
+  <DashboardWrapper>
+    <DashboardTitle title="Create custom link" />
+  </DashboardWrapper>
 </template>
-
 <script setup lang="ts">
 definePageMeta({
   layout: 'dashboard',
@@ -11,18 +10,12 @@ definePageMeta({
 })
 
 useHead({
-  title: 'TinyPath - Dashboard',
+  title: 'TinyPath - Dashboard | Create custom link',
   meta: [
     {
       name: 'description',
       content: 'Dashboard page'
     }
   ]
-})
-
-const authStore = useAuthStore()
-
-onMounted(async () => {
-  await authStore.loadLoggedInUser()
 })
 </script>

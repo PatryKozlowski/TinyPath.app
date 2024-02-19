@@ -2,10 +2,10 @@ namespace TinyPath.Application.Exceptions;
 
 public class UnauthorizedException : Exception
 {
-    public string? Reason { get; private set; }
+    public string? Error { get; private set; }
     
-    public UnauthorizedException(string? reason = "Unauthorized")
+    public UnauthorizedException(string? error = "Unauthorized")
     {
-        Reason = reason;
+        Error = error;
     }
 }

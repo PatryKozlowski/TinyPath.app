@@ -45,6 +45,13 @@ public abstract class CreateCustomShortLinkCommand
                 throw new ErrorException("CustomLinkDisabled");
             }
             
+            var isLogged = await _currentUserProvider.GetAuthenticatedUser();
+
+            if (isLogged is null)
+            {
+                throw new UnauthorizedException();
+            }
+            
             var user = await _currentUserProvider.GetPremiumUser();
 
             if (user is null && user?.Role != UserRole.Admin)

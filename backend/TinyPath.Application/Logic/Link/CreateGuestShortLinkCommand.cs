@@ -11,7 +11,7 @@ using TinyPath.Domain.Entities.TinyPath;
 
 namespace TinyPath.Application.Logic.Link;
 
-public abstract class CreateShortLinkCommand
+public abstract class CreateGuestShortLinkCommand
 {
     public class Request : IRequest<Response>
     {
@@ -26,15 +26,18 @@ public abstract class CreateShortLinkCommand
 
     public class Handler : BaseCommandHandler, IRequestHandler<Request, Response>
     {
-        private readonly ILinkManager _linkManager;
         private readonly ICurrentUserProvider _currentUserProvider;
+        private readonly IGetLinkOptions _getLinkOptions;
+        private readonly ILinkManager _linkManager;
         private readonly IGuestManager _guestManager;
         private readonly IBackgroundServices _backgroundServices;
+
         
-        public Handler(IApplicationDbContext dbContext, ILinkManager linkManager, ICurrentUserProvider currentUserProvider, IGuestManager guestManager, IBackgroundServices backgroundServices) : base(dbContext)
+        public Handler(IApplicationDbContext dbContext, ICurrentUserProvider currentUserProvider, IGetLinkOptions getLinkOptions, ILinkManager linkManager, IGuestManager guestManager, IBackgroundServices backgroundServices) : base(dbContext)
         {
-            _linkManager = linkManager;
             _currentUserProvider = currentUserProvider;
+            _getLinkOptions = getLinkOptions;
+            _linkManager = linkManager;
             _guestManager = guestManager;
             _backgroundServices = backgroundServices;
         }
@@ -42,11 +45,26 @@ public abstract class CreateShortLinkCommand
         public async Task<Response> Handle(Request request, CancellationToken cancellationToken)
         {
             var user = await _currentUserProvider.GetAuthenticatedUser();
-
-            if (user is null)
+            
+            if (user != null)
             {
-                throw new UnauthorizedException();
+                throw new ErrorException("UserIsNotGuest");
             }
+            
+            var guest = await _guestManager.GetGuestUser();
+            
+            if (guest is null)
+            {
+                var createdGuest = await _guestManager.CreateGuestUser();
+                guest = createdGuest;
+            }
+            else
+            {
+                _guestManager.ValidateGuestUserCreationLink(guest);
+            }
+            
+            var maxLinkCountForGuest = _getLinkOptions.GetMaxLinkCountForGuestUser();
+            var blockTimeInMinutesForGuest = _getLinkOptions.GetBlockTimeInMinutesForGuestUser();
             
             var (fullLink, linkCode) = _linkManager.GenerateShortLink(request.Url);
             
@@ -66,8 +84,18 @@ public abstract class CreateShortLinkCommand
                 Title = request.Title
             };
             
-            linkEntity.UserId = user.Id;
-            linkEntity.User = user;
+            linkEntity.GuestId = guest.Id;
+            linkEntity.Guest = guest;
+            guest.Links++;
+                
+            if (guest.Links >= maxLinkCountForGuest)
+            {
+                guest.Blocked = true;
+                guest.BlockedUntil = DateTimeOffset.UtcNow.AddMinutes(blockTimeInMinutesForGuest);
+                _backgroundServices.UnblockGuestUser(guest.Id, blockTimeInMinutesForGuest);
+            }
+                
+            _dbContext.Guests.Update(guest);
             
             _dbContext.Links.Add(linkEntity);
             
@@ -83,18 +111,18 @@ public abstract class CreateShortLinkCommand
             
             return new Response { Link = linkEntity.Url };
         }
-    }
-    
-    public class Validator : AbstractValidator<Request>
-    {
-        public Validator()
+        
+        public class Validator : AbstractValidator<Request>
         {
-            RuleFor(x => x.Url)
-                .NotEmpty().WithMessage("UrlRequired")
-                .Must(url => Uri.TryCreate(url, UriKind.Absolute, out _)).WithMessage("InvalidURL")
-                .Must(url => Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute)).WithMessage("InvalidUrlFormat")
-                .Must(url => Uri.IsWellFormedUriString(url, UriKind.Absolute) && (url.StartsWith("http://") || url.StartsWith("https://")))
-                .WithMessage("UrlMustStartWithHttpOrHttps");
+            public Validator()
+            {
+                RuleFor(x => x.Url)
+                    .NotEmpty().WithMessage("UrlRequired")
+                    .Must(url => Uri.TryCreate(url, UriKind.Absolute, out _)).WithMessage("InvalidURL")
+                    .Must(url => Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute)).WithMessage("InvalidUrlFormat")
+                    .Must(url => Uri.IsWellFormedUriString(url, UriKind.Absolute) && (url.StartsWith("http://") || url.StartsWith("https://")))
+                    .WithMessage("UrlMustStartWithHttpOrHttps");
+            }
         }
     }
 }

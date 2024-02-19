@@ -55,9 +55,9 @@ public abstract class SendLinkViewsEmailForGuestUserCommand
                 throw new ErrorException("LinkNotFound");
             }
             
-            var host = _getLinkOptions.GetShortLinkHost();
-            
-            var linkViewsCount = host + "/Link/GetLinkViewsCountForGuestUser?linkId=" + lastLinkId;
+            // var host = _getLinkOptions.GetShortLinkHost();
+            var host = "http://localhost:3000";
+            var linkViewsCount = host + "/visitors?linkId=" + lastLinkId;
 
             var emailSchema = _emailSchema.GetSchema(EmailSchemas.LinksCountEmail, linkViewsCount);
 

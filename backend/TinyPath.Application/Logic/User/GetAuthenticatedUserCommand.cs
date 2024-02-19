@@ -1,7 +1,9 @@
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using TinyPath.Application.Exceptions;
 using TinyPath.Application.Interfaces;
 using TinyPath.Application.Logic.Abstractions;
+using TinyPath.Domain.Enums;
 
 namespace TinyPath.Application.Logic.User;
 
@@ -14,6 +16,8 @@ public abstract class GetAuthenticatedUserCommand
     public class Response
     {
         public required string Email { get; set; }
+        public required bool IsSubscribed { get; set; }
+        public required bool IsAdmin { get; set; }
     }
 
     public class Handler : BaseCommandHandler, IRequestHandler<Request, Response>
@@ -31,10 +35,20 @@ public abstract class GetAuthenticatedUserCommand
             
             if (user is null)
             {
-                throw new ErrorException("UserNotFound");
+                throw new UnauthorizedException("UserNotFound");
             }
 
-            return new Response() { Email = user.Email };
+            var subscription = await _dbContext
+                .Subscriptions
+                .Where(x => x.UserId == user.Id && x.Expires > DateTimeOffset.UtcNow)
+                .AnyAsync();
+            
+            var isAdmin = await _dbContext
+                .Users
+                .Where(x => x.Id == user.Id && x.Role == UserRole.Admin)
+                .AnyAsync();
+
+            return new Response() { Email = user.Email, IsSubscribed = subscription, IsAdmin = isAdmin};
         }
     }
 }

@@ -15,6 +15,8 @@ public abstract class GetGuestCommand
     public class Response
     {
         public required int Links { get; set; }
+        public required bool Blocked { get; set; }
+        public required DateTimeOffset? BlockedUntil { get; set; }
     }
 
     public class Handler : BaseCommandHandler, IRequestHandler<Request, Response>
@@ -35,7 +37,12 @@ public abstract class GetGuestCommand
                 throw new ErrorException("GuestUserNotFound");
             }
             
-            return new Response() { Links = guest.Links };
+            return new Response()
+            {
+                Links = guest.Links,
+                Blocked = guest.Blocked,
+                BlockedUntil = guest.BlockedUntil
+            };
         }
     }
 }

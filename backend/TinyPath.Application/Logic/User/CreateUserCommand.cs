@@ -1,6 +1,7 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using TinyPath.Application.Exceptions;
 using TinyPath.Application.Interfaces;
 using TinyPath.Application.Logic.Abstractions;
 using TinyPath.Application.Services.Conformation;
@@ -46,14 +47,14 @@ public abstract class CreateUserCommand
         {
            if (request.Password != request.RepeatPassword)
            {
-               return new Response {Message = "PasswordsDoNotMatch"};
+               throw new ErrorException("PasswordsDoNotMatch");
            }
            
            var user =  await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == request.Email);
 
            if (user is not null)
            {
-               throw new Exception("EmailAlreadyExists");
+               throw new ErrorException("EmailAlreadyExists");
            }
            
            var createdUser = new Domain.Entities.TinyPath.User

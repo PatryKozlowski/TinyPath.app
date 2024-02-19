@@ -2,7 +2,9 @@ import { useToast } from '@/components/ui/toast/use-toast'
 
 interface AuthUser {
   email: string
-  token: string
+  token?: string
+  isSubscribed?: boolean
+  isAdmin?: boolean
 }
 
 interface LoginResponse {
@@ -16,7 +18,12 @@ interface LoginForm {
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    authUser: null as AuthUser | null,
+    authUser: {
+      email: '',
+      token: '',
+      isSubscribed: false,
+      isAdmin: false
+    } as AuthUser | null,
     isLoading: false as boolean,
     isAuthenticated: false as boolean
   }),
@@ -90,7 +97,8 @@ export const useAuthStore = defineStore('auth', {
       }).then((response) => {
         this.authUser = {
           email: response.email,
-          token: this.authUser!.token
+          isSubscribed: response.isSubscribed,
+          isAdmin: response.isAdmin
         }
       })
     }

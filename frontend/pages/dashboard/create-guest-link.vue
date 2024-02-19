@@ -156,7 +156,8 @@ const create = async (values: CreateLink) => {
       await $fetch(CREATE_ENDPOINT_API, {
         method: 'POST',
         body: {
-          url: cleanedValues.url
+          url: cleanedValues.url,
+          title: values.title
         },
         onResponseError({ request, response, options }) {
           createdLink.value = ''

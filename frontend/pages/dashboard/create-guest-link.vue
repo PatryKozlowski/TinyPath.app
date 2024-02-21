@@ -1,79 +1,83 @@
 <template>
-  <DashboardWrapper>
-    <DashboardTitle title="Create guest link" />
-    <form
-      v-if="!isLoading && createdLink.length === 0"
-      class="space-y-6"
-      @submit.prevent="onSubmit"
-    >
-      <FormField v-slot="{ componentField }" name="url" class="mb-4">
-        <FormItem class="flex flex-col">
-          <FormLabel class="mb-4 text-md font-normal text-black">
-            Destination
-          </FormLabel>
-          <FormControl>
-            <Input
-              type="text"
-              placeholder="https://example.com/your-link"
-              v-bind="componentField"
-            />
-          </FormControl>
-          <div class="text-red-500 h-6">{{ errors.url }}</div>
-        </FormItem>
-      </FormField>
-      <div
-        class="text-slate-400 flex"
-        v-if="!isAuthenticated && !guestStore.isLoading && links !== 0"
+  <Navbar />
+  <div class="p-8">
+    <DashboardWrapper>
+      <DashboardTitle title="Create guest link" />
+      <form
+        v-if="!isLoading && createdLink.length === 0"
+        class="space-y-6"
+        @submit.prevent="onSubmit"
       >
-        <p>You can only create</p>
-        <p class="mx-1 text-black font-semibold">
-          {{ links }}
-        </p>
-        <p>more links</p>
-      </div>
-      <div v-if="!isAuthenticated && !guestStore.isLoading && links === 0">
-        <p class="text-red-500">You can't create more links</p>
-      </div>
-      <Spinner class="text-center" v-else-if="!isAuthenticated" />
-      <FormField v-slot="{ componentField }" name="title" class="mb-4">
-        <FormItem class="flex flex-col">
-          <FormLabel class="mb-4 text-sm text-black font-light">
-            Title (optional)
-          </FormLabel>
-          <FormControl>
-            <Input type="text" v-bind="componentField" />
-          </FormControl>
-          <div class="text-red-500 h-6">{{ errors.title }}</div>
-        </FormItem>
-      </FormField>
-      <Separator />
-      <div class="flex w-full justify-center flex-col md:flex-row">
-        <Button
-          type="submit"
-          :disabled="
-            isLoading ||
-            guestStore.isLoading ||
-            (links === 0 && !isAuthenticated)
-          "
-          class="w-full bg-violet-500 hover:bg-gray-700 transition-colors duration-300"
+        <FormField v-slot="{ componentField }" name="url" class="mb-4">
+          <FormItem class="flex flex-col">
+            <FormLabel class="mb-4 text-md font-normal text-black">
+              Destination
+            </FormLabel>
+            <FormControl>
+              <Input
+                type="text"
+                placeholder="https://example.com/your-link"
+                v-bind="componentField"
+              />
+            </FormControl>
+            <div class="text-red-500 h-6">{{ errors.url }}</div>
+          </FormItem>
+        </FormField>
+        <Spinner
+          class="text-center"
+          v-if="!isAuthenticated && isLoadingGuest"
+        />
+        <div
+          class="text-slate-400 flex"
+          v-else-if="!isAuthenticated && !isLoadingGuest && links !== 0"
         >
-          <template v-if="isLoading">
-            <Spinner />
-          </template>
-          <template v-else> Create ! </template>
-        </Button>
-      </div>
-    </form>
-    <Spinner v-if="isLoading" class="text-center" />
-    <ShortLinkBox
-      :createdLink="createdLink"
-      v-else-if="!isLoading && createdLink.length > 0"
-    />
-    <GuestEmailForLink
-      v-if="!isAuthenticated && createdLink.length > 0 && !isSendEmailForLink"
-    />
-    <p v-else-if="isSendEmailForLink" class="text-black">Email was send</p>
-  </DashboardWrapper>
+          <p>You can only create</p>
+          <p class="mx-1 text-black font-semibold">
+            {{ links }}
+          </p>
+          <p>more links</p>
+        </div>
+        <div v-if="!isAuthenticated && !isLoadingGuest && links === 0">
+          <p class="text-red-500">You can't create more links</p>
+        </div>
+        <FormField v-slot="{ componentField }" name="title" class="mb-4">
+          <FormItem class="flex flex-col">
+            <FormLabel class="mb-4 text-sm text-black font-light">
+              Title (optional)
+            </FormLabel>
+            <FormControl>
+              <Input type="text" v-bind="componentField" />
+            </FormControl>
+            <div class="text-red-500 h-6">{{ errors.title }}</div>
+          </FormItem>
+        </FormField>
+        <Separator />
+        <div class="flex w-full justify-center flex-col md:flex-row">
+          <Button
+            type="submit"
+            :disabled="
+              isLoading || isLoadingGuest || (links === 0 && !isAuthenticated)
+            "
+            class="w-full bg-violet-500 hover:bg-gray-700 transition-colors duration-300"
+          >
+            <template v-if="isLoading">
+              <Spinner />
+            </template>
+            <template v-else> Create ! </template>
+          </Button>
+        </div>
+      </form>
+      <Spinner v-if="isLoading" class="text-center" />
+      <ShortLinkBox
+        :createdLink="createdLink"
+        v-else-if="!isLoading && createdLink.length > 0"
+      />
+      <GuestEmailForLink
+        v-if="!isAuthenticated && createdLink.length > 0 && !isSendEmailForLink"
+      />
+      <p v-else-if="isSendEmailForLink" class="text-black">Email was send</p>
+    </DashboardWrapper>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -81,19 +85,6 @@ import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { useToast } from '@/components/ui/toast/use-toast'
-
-interface CreateLink {
-  url: string
-  title?: string
-}
-
-interface CreateLinkResponse {
-  link: string
-}
-
-definePageMeta({
-  layout: 'dashboard'
-})
 
 useHead({
   title: 'TinyPath - Dashboard | Create Guest Link',
@@ -105,17 +96,16 @@ useHead({
   ]
 })
 
-const runTimeConfig = useRuntimeConfig()
-const { toast } = useToast()
 const createdLink = ref('')
 const isLoading = ref(false)
+const isLoadingGuest = ref(true)
 const authStore = useAuthStore()
 const { isAuthenticated } = storeToRefs(authStore)
+const { $api } = useNuxtApp()
+const useRepository = repository($api)
 
 const guestStore = useGuestStore()
 const { links, isSendEmailForLink } = storeToRefs(guestStore)
-
-const CREATE_ENDPOINT_API = `${runTimeConfig.public.BASE_URL}/api/Link/CreateShortLinkCommand`
 
 const formSchema = toTypedSchema(
   z
@@ -140,39 +130,27 @@ const formSchema = toTypedSchema(
     })
 )
 
-const { handleSubmit, errors } = useForm<CreateLink>({
+const { handleSubmit, errors } = useForm<CreateLinkForm>({
   validationSchema: formSchema
 })
 
-const create = async (values: CreateLink) => {
+const create = async (values: CreateLinkForm) => {
   isLoading.value = true
   const { title, ...rest } = values
 
   const cleanedValues = title === undefined ? rest : values
 
-  await useAsyncData<CreateLinkResponse>(
-    'createGuestLink',
-    async () =>
-      await $fetch(CREATE_ENDPOINT_API, {
-        method: 'POST',
-        body: {
-          url: cleanedValues.url,
-          title: values.title
-        },
-        onResponseError({ request, response, options }) {
-          createdLink.value = ''
-          toast({
-            description: response._data.error,
-            variant: 'destructive'
-          })
-        },
-        onResponse({ request, response, options }) {
-          createdLink.value = response._data.link
-        }
-      })
-  ).finally(() => {
-    isLoading.value = false
-  })
+  const data = await useRepository
+    .createShortLink(cleanedValues)
+    .finally(() => {
+      isLoading.value = false
+    })
+
+  if (data.link) {
+    createdLink.value = data.link
+  } else {
+    createdLink.value = ''
+  }
 }
 
 const onSubmit = handleSubmit((values, action) => {
@@ -182,7 +160,11 @@ const onSubmit = handleSubmit((values, action) => {
 
 onMounted(async () => {
   if (!isAuthenticated.value) {
-    await guestStore.loadGuestData()
+    await guestStore.loadGuestData().finally(() => {
+      isLoadingGuest.value = false
+    })
+  } else {
+    navigateTo('/dashboard')
   }
 })
 </script>

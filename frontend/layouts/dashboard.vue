@@ -1,6 +1,6 @@
 <template>
   <div class="h-full relative">
-    <div :class="sidebarClass" v-if="isAuthenticated">
+    <div :class="sidebarClass">
       <Sidebar :close-sidebar="sidebarClosed" />
       <Button
         class="hidden z-[90] md:flex absolute top-12 left-[270px] rounded-full transition-all duration-300"
@@ -20,7 +20,9 @@
     <div :class="wrapperClass">
       <Navbar />
       <main class="p-10">
-        <slot />
+        <Suspense>
+          <slot />
+        </Suspense>
       </main>
     </div>
   </div>
@@ -28,8 +30,6 @@
 
 <script setup lang="ts">
 const sidebarClosed = ref(false)
-const authStore = useAuthStore()
-const { isAuthenticated } = storeToRefs(authStore)
 
 const toggleSidebar = () => {
   sidebarClosed.value = !sidebarClosed.value
@@ -54,7 +54,7 @@ const sidebarClass = computed(() => ({
 const wrapperClass = computed(() => ({
   'transition-width': true,
   'duration-300': true,
-  'md:pl-72': !sidebarClosed.value && isAuthenticated.value,
+  'md:pl-72': !sidebarClosed.value,
   'md:pl-20': sidebarClosed.value
 }))
 </script>

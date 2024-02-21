@@ -58,16 +58,6 @@
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
-import { useToast } from '@/components/ui/toast/use-toast'
-
-interface CreateLink {
-  url: string
-  title?: string
-}
-
-interface CreateLinkResponse {
-  link: string
-}
 
 definePageMeta({
   layout: 'dashboard',
@@ -84,13 +74,10 @@ useHead({
   ]
 })
 
-const runTimeConfig = useRuntimeConfig()
-const { toast } = useToast()
 const createdLink = ref('')
 const isLoading = ref(false)
-const authStore = useAuthStore()
-
-const CREATE_ENDPOINT_API = `${runTimeConfig.public.BASE_URL}/api/Link/CreateShortLinkCommand`
+const { $api } = useNuxtApp()
+const useRepository = repository($api)
 
 const formSchema = toTypedSchema(
   z
@@ -115,44 +102,27 @@ const formSchema = toTypedSchema(
     })
 )
 
-const { handleSubmit, errors } = useForm<CreateLink>({
+const { handleSubmit, errors } = useForm<CreateLinkForm>({
   validationSchema: formSchema
 })
 
-const create = async (values: CreateLink) => {
+const create = async (values: CreateLinkForm) => {
   isLoading.value = true
   const { title, ...rest } = values
 
   const cleanedValues = title === undefined ? rest : values
 
-  await useAsyncData<CreateLinkResponse>(
-    'createLink',
-    async () =>
-      await $fetch(CREATE_ENDPOINT_API, {
-        method: 'POST',
-        body: {
-          url: cleanedValues.url,
-          title: values.title
-        },
-        onRequest({ request, options }) {
-          options.headers = {
-            Authorization: `Bearer ${authStore.user?.token}`
-          }
-        },
-        onResponseError({ request, response, options }) {
-          createdLink.value = ''
-          toast({
-            description: response._data.error,
-            variant: 'destructive'
-          })
-        },
-        onResponse({ request, response, options }) {
-          createdLink.value = response._data.link
-        }
-      })
+  const { data } = await useAsyncData(() =>
+    useRepository.createShortLink(cleanedValues)
   ).finally(() => {
     isLoading.value = false
   })
+
+  if (data.value) {
+    createdLink.value = data.value.link
+  } else {
+    createdLink.value = ''
+  }
 }
 
 const onSubmit = handleSubmit((values, action) => {

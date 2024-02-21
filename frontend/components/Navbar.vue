@@ -14,6 +14,12 @@
           <DropdownMenuSeparator />
           <DropdownMenuItem>
             {{ user?.email }}
+            <Badge v-if="user?.isSubscribed" class="bg-yellow-500 ml-2">
+              Premium
+            </Badge>
+            <Badge v-else-if="user?.isAdmin" class="bg-violet-500 ml-2">
+              Admin
+            </Badge>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem>Billing</DropdownMenuItem>

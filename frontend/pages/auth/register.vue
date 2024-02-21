@@ -127,17 +127,6 @@ import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { useToast } from '@/components/ui/toast/use-toast'
 
-interface Register {
-  email: string
-  password: string
-  repeatPassword: string
-}
-
-interface Hidden {
-  password: boolean
-  repeatPassword: boolean
-}
-
 useHead({
   title: 'TinyPath - Register',
   meta: [
@@ -147,13 +136,10 @@ useHead({
     }
   ]
 })
+const { $api } = useNuxtApp()
+const useRepository = repository($api)
 
-const { toast } = useToast()
-const router = useRouter()
-const runTimeConfig = useRuntimeConfig()
-
-const REGISTER_ENDPOINT_API = `${runTimeConfig.public.BASE_URL}/api/User/CreateUserCommand`
-const REDIRETECT_ENDPOINT = '/auth/confirmation'
+const REDIRETECT_ENDPOINT = '/auth/confirm'
 
 const isLoading = ref(false)
 
@@ -200,37 +186,21 @@ const toggleHidden = (field: keyof Hidden) => {
   hidden.value[field] = !hidden.value[field]
 }
 
-const { handleSubmit, errors } = useForm<Register>({
+const { handleSubmit, errors } = useForm<RegisterForm>({
   validationSchema: formSchemaRegister
 })
 
-const register = async (formValue: Register) => {
+const register = async (formValue: RegisterForm) => {
   isLoading.value = true
-  await useAsyncData(
-    'register',
-    async () =>
-      await $fetch(REGISTER_ENDPOINT_API, {
-        method: 'POST',
-        body: {
-          email: formValue.email,
-          password: formValue.password,
-          repeatPassword: formValue.repeatPassword
-        },
-        onResponseError({ request, response, options }) {
-          toast({
-            description: response._data.error,
-            variant: 'destructive'
-          })
-        },
-        onResponse({ request, response, options }) {
-          if (response.status === 200) {
-            router.push(REDIRETECT_ENDPOINT)
-          }
-        }
-      })
+  const { data } = await useAsyncData(() =>
+    useRepository.register(formValue)
   ).finally(() => {
     isLoading.value = false
   })
+
+  if (data.value) {
+    navigateTo(REDIRETECT_ENDPOINT)
+  }
 }
 
 const onSubmit = handleSubmit((values, action) => {

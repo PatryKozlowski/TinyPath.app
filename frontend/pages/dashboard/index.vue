@@ -23,6 +23,8 @@ useHead({
 const authStore = useAuthStore()
 
 onMounted(async () => {
-  await authStore.loadLoggedInUser()
+  if (!authStore.user?.email) {
+    await authStore.loadedUserData()
+  }
 })
 </script>

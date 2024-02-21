@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   imports: {
-    dirs: ['stores']
+    dirs: ['stores', 'utils', 'types']
   },
   modules: [
     '@nuxtjs/tailwindcss',
@@ -28,7 +28,8 @@ export default defineNuxtConfig({
       BASE_URL:
         process.env.NUXT_PUBLIC_BASE_URL ??
         'https://api.kozlowskip.pl/tinypath',
-      MAX_GUEST_LINKS: process.env.NUXT_PUBLIC_MAX_GUEST_LINKS
+      MAX_GUEST_LINKS: process.env.NUXT_PUBLIC_MAX_GUEST_LINKS,
+      MAX_LENGTH_CUSTOM_CODE: process.env.NUXT_PUBLIC_MAX_LENGTH_CUSTOM_CODE
     }
   },
   plugins: []

@@ -43,6 +43,21 @@
       </div>
     </div>
     <!-- Free content  -->
+    <div class="px-4">
+      <Button class="bg-violet-500 hover:bg-violet-400 w-full">
+        <div
+          class="flex items-center"
+          :class="{ 'flex justify-center w-full': isClose }"
+        >
+          <Icon
+            name="lucide:gem"
+            class="w-4 h-4"
+            :class="{ 'mr-2': !isClose }"
+          />
+          <span :class="{ hidden: isClose }"> Get premium </span>
+        </div>
+      </Button>
+    </div>
   </div>
 </template>
 

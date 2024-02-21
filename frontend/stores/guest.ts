@@ -1,16 +1,13 @@
 import { defineStore } from 'pinia'
 
-interface GuestData {
-  links: number
-}
-
 export const useGuestStore = defineStore({
   id: 'guest-store',
   state: () => ({
-    isLoading: false,
     isSendEmailForLink: false,
     guestData: {
-      links: 0
+      links: 0,
+      blocked: false,
+      blockedUntil: null
     } as GuestData | null
   }),
   getters: {
@@ -18,32 +15,25 @@ export const useGuestStore = defineStore({
   },
   actions: {
     async loadGuestData() {
-      this.isLoading = true
       const runTimeConfig = useRuntimeConfig()
-      const MAX_GUEST_LINKS = runTimeConfig.public
+      const maxLinksForGuest = runTimeConfig.public
         .MAX_GUEST_LINKS as unknown as number
-      const GUEST_LINKS_ENDPOINT_API = `${runTimeConfig.public.BASE_URL}/api/Guest/GetGuestCommand`
-
-      this.$patch((state) => {
-        state.guestData = {
-          links: MAX_GUEST_LINKS
+      const { $api } = useNuxtApp()
+      const useRepository = repository($api)
+      this.guestData = {
+        links: maxLinksForGuest,
+        blocked: false,
+        blockedUntil: null
+      }
+      const data = await useRepository.loadGuestData()
+      const restLinks = maxLinksForGuest - data.links
+      if (data) {
+        this.guestData = {
+          links: restLinks,
+          blocked: data.blocked,
+          blockedUntil: data.blockedUntil
         }
-      })
-      await $fetch<GuestData>(GUEST_LINKS_ENDPOINT_API, {
-        method: 'GET',
-        credentials: 'include'
-      })
-        .then((response) => {
-          const restLinks = this.$state.guestData!.links - response.links
-          this.$patch((state) => {
-            state.guestData = {
-              links: restLinks
-            }
-          })
-        })
-        .finally(() => {
-          this.isLoading = false
-        })
+      }
     }
   }
 })

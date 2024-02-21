@@ -33,15 +33,9 @@
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
-import { useToast } from '@/components/ui/toast/use-toast'
 
-interface GuestEmial {
-  email: string
-}
-
-const { toast } = useToast()
-const runTimeConfig = useRuntimeConfig()
-const GUEST_EMAIL_ENDPOINT_API = `${runTimeConfig.public.BASE_URL}/api/Link/SendLinkViewsEmailForGuestUserCommand`
+const { $api } = useNuxtApp()
+const useRepository = repository($api)
 
 const formSchema = toTypedSchema(
   z.object({
@@ -49,39 +43,25 @@ const formSchema = toTypedSchema(
   })
 )
 
-const { handleSubmit, errors } = useForm<GuestEmial>({
+const { handleSubmit, errors } = useForm<GuestEmailForm>({
   validationSchema: formSchema
 })
 
 const isLoading = ref(false)
 const guestStore = useGuestStore()
 
-const sendLinksToEmail = async (values: GuestEmial) => {
+const sendLinksToEmail = async (values: GuestEmailForm) => {
   isLoading.value = true
 
-  await useAsyncData(
-    'guestEmailForLink',
-    async () =>
-      await $fetch(GUEST_EMAIL_ENDPOINT_API, {
-        method: 'POST',
-        body: {
-          email: values.email
-        },
-        onResponseError({ request, response, options }) {
-          toast({
-            description: response._data.error,
-            variant: 'destructive'
-          })
-        },
-        onResponse({ request, response, options }) {
-          if (response._data) {
-            guestStore.isSendEmailForLink = true
-          }
-        }
-      })
-  ).finally(() => {
-    isLoading.value = false
-  })
+  const data = await useRepository
+    .sendEmailForTrackingLink(values)
+    .finally(() => {
+      isLoading.value = false
+    })
+
+  if (data) {
+    guestStore.isSendEmailForLink = true
+  }
 }
 
 const onSubmitEmail = handleSubmit((values, action) => {

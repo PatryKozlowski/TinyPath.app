@@ -1,37 +1,28 @@
 <template>
-  <div
-    class="w-full h-screen flex flex-col justify-center items-center bg-gray-700"
-  >
-    <div
-      class="md:w-[400px] w-[350px] p-8 bg-slate-600 shadow-xl rounded-xl flex justify-center flex-col items-center"
+  <form class="space-y-3 p-4 w-full" @submit.prevent="onSubmit">
+    <FormField v-slot="{ componentField }" name="email" class="mb-4">
+      <FormItem>
+        <FormControl>
+          <Input
+            type="text"
+            placeholder="Type your email"
+            v-bind="componentField"
+          />
+        </FormControl>
+        <div class="text-red-500 h-6">{{ errors.email }}</div>
+      </FormItem>
+    </FormField>
+    <Button
+      :disabled="isLoading"
+      type="submit"
+      class="w-full bg-violet-500 hover:bg-gray-700 transition-colors duration-300"
     >
-      <Logo />
-      <form class="space-y-3 p-4 w-full" @submit.prevent="onSubmit">
-        <FormField v-slot="{ componentField }" name="email" class="mb-4">
-          <FormItem>
-            <FormControl>
-              <Input
-                type="text"
-                placeholder="Type your email"
-                v-bind="componentField"
-              />
-            </FormControl>
-            <div class="text-red-500 h-6">{{ errors.email }}</div>
-          </FormItem>
-        </FormField>
-        <Button
-          :disabled="isLoading"
-          type="submit"
-          class="w-full bg-violet-500 hover:bg-gray-700 transition-colors duration-300"
-        >
-          <template v-if="isLoading">
-            <Spinner />
-          </template>
-          <template v-else> Go ! </template>
-        </Button>
-      </form>
-    </div>
-  </div>
+      <template v-if="isLoading">
+        <Spinner />
+      </template>
+      <template v-else> Go ! </template>
+    </Button>
+  </form>
 </template>
 
 <script setup lang="ts">
@@ -43,6 +34,10 @@ import { useToast } from '@/components/ui/toast/use-toast'
 interface Resend {
   email: string
 }
+
+definePageMeta({
+  layout: 'auth'
+})
 
 useHead({
   title: 'TinyPath - Resend confirmation email',

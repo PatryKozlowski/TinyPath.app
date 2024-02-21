@@ -85,11 +85,6 @@ import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 
-interface Login {
-  email: string
-  password: string
-}
-
 useHead({
   title: 'TinyPath - Login',
   meta: [
@@ -122,7 +117,7 @@ const formSchemaLogin = toTypedSchema(
   })
 )
 
-const { handleSubmit, errors } = useForm<Login>({
+const { handleSubmit, errors } = useForm<LoginForm>({
   validationSchema: formSchemaLogin
 })
 

@@ -17,7 +17,6 @@ public abstract class ConfirmEmailCommand
     public class Response
     {
         public required string Message { get; init; }
-        public required string RedirectUrl { get; init; }
     }
 
     public class Handler : BaseCommandHandler, IRequestHandler<Request, Response>
@@ -63,9 +62,7 @@ public abstract class ConfirmEmailCommand
                 
                 await _dbContext.SaveChangesAsync();
                 
-                var redirectUrl = _confirmationLink.RedirectConfirmationLink();
-                
-                return new Response { Message = "EmailConfirmed", RedirectUrl = redirectUrl };
+                return new Response { Message = "EmailConfirmed" };
             }
 
             throw new ErrorException("EmailAlreadyConfirmed");

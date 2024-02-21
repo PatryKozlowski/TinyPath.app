@@ -54,11 +54,10 @@ public class GuestManager : IGuestManager
     public bool ValidateGuestUserCreationLink(Domain.Entities.TinyPath.Guest? guestUser)
     {
         var maxLinkCountForGuestUser = _getLinkOptions.GetMaxLinkCountForGuestUser();
-        var blockTimeInMinutesForGuestUser = _getLinkOptions.GetBlockTimeInMinutesForGuestUser();
         
         if (guestUser is not null && guestUser.Links >= maxLinkCountForGuestUser || guestUser!.BlockedUntil > DateTimeOffset.UtcNow || guestUser.Blocked)
         {
-            throw new ErrorException("GuestUserLinkCountExceededBlockTime " + guestUser.BlockedUntil?.ToString("yyyy-MM-dd HH:mm:ss"));
+            throw new ErrorException("GuestUserLinkCountExceededBlockTime");
         }
 
         return true;

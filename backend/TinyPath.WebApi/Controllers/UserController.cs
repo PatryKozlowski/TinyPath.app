@@ -27,14 +27,7 @@ public class UserController : BaseController
     [HttpGet]
     public async Task<ActionResult> ConfirmEmailCommand([FromQuery] ConfirmEmailCommand.Request request)
     {
-        var resposne = await _mediator.Send(request);
-        
-        if (Response.StatusCode == 200)
-        {
-            return Redirect(resposne.RedirectUrl);
-        }
-        
-        return Ok(resposne);
+        return await ProcessRequestAsync(request);
     }
     
     [HttpPost]

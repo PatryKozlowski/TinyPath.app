@@ -42,6 +42,30 @@ public class LinkController : BaseController
         return await ProcessRequestAsync(request);
     }
     
+    [HttpGet]
+    public async Task<ActionResult> GetLinksCommand([FromQuery] GetLinksCommand.Request request)
+    {
+        return await ProcessRequestAsync(request);
+    }
+    
+    [HttpGet]
+    public async Task<ActionResult> GetLinkCommand([FromQuery] GetLinkCommand.Request request)
+    {
+        return await ProcessRequestAsync(request);
+    }
+    
+    [HttpDelete]
+    public async Task<ActionResult> DeleteLinkCommand([FromQuery] DeleteLinkCommand.Request request)
+    {
+        return await ProcessRequestAsync(request);
+    }
+    
+    [HttpPatch]
+    public async Task<ActionResult> UpdateLinkCommand([FromBody] UpdateLinkCommand.Request request)
+    {
+        return await ProcessRequestAsync(request);
+    }
+    
     private async Task<ActionResult> ProcessRequestAsync<TRequest>(TRequest request)
     {
         var response = await _mediator.Send(request!);

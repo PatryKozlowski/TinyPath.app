@@ -98,11 +98,11 @@ public class JwtManager : IJwtManager
         }
         catch (SecurityTokenExpiredException)
         {
-            throw new ErrorException("TokenExpired");
+            throw new UnauthorizedException("TokenExpired");
         }
         catch
         {
-            throw new ErrorException("InvalidToken");
+            throw new UnauthorizedException("InvalidToken");
         }
 
         return true;

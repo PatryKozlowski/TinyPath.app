@@ -1,5 +1,5 @@
 import type { $Fetch, NitroFetchRequest } from 'nitropack'
-import type { CheckoutResponse } from '~/types'
+import type { CheckoutResponse, LinksResponse } from '~/types'
 
 const LOGIN_ENDPOINT_API = '/api/User/LoginCommand'
 const REGISTER_ENDPOINT_API = '/api/User/CreateUserCommand'
@@ -12,6 +12,10 @@ const GUEST_LINKS_ENDPOINT_API = '/api/Guest/GetGuestCommand'
 const GUEST_EMAIL_ENDPOINT_API =
   '/api/Link/SendLinkViewsEmailForGuestUserCommand'
 const CHECKOUT_ENDPOINT_API = '/api/Stripe/CreateCheckoutSession'
+const GET_LINKS_ENDPOINT_API = '/api/Link/GetLinksCommand'
+const GET_LINK_ENDPOINT_API = '/api/Link/GetLinkCommand'
+const DELETE_LINK_ENDPOINT_API = '/api/Link/DeleteLinkCommand'
+const UPDATE_LINK_ENDPOINT_API = '/api/Link/UpdateLinkCommand'
 
 export const repository = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
   async login(formValue: LoginForm): Promise<LoginResponse> {
@@ -20,11 +24,6 @@ export const repository = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
       body: {
         email: formValue.email,
         password: formValue.password
-      },
-      onResponseError({ request, response, options }) {
-        if (response._data.error === 'UserAlreadyLoggedIn') {
-          navigateTo('/dashboard')
-        }
       }
     })
   },
@@ -103,6 +102,44 @@ export const repository = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
       method: 'POST',
       body: {
         priceCode: checkoutForm.priceCode
+      }
+    })
+  },
+
+  async loadLinksData(pageNo: number, pageSize: number) {
+    return await fetch<LinksResponse>(
+      `${GET_LINKS_ENDPOINT_API}?PageNo=${pageNo}&PageSize=${pageSize}`,
+      {
+        method: 'GET'
+      }
+    )
+  },
+
+  async loadLinkData(linkId: string) {
+    return await fetch<LinkResponse>(
+      `${GET_LINK_ENDPOINT_API}?LinkId=${linkId}`,
+      {
+        method: 'GET'
+      }
+    )
+  },
+
+  async deleteLink(linkId: string) {
+    return await fetch<DeleteLinkResponse>(
+      `${DELETE_LINK_ENDPOINT_API}?LinkId=${linkId}`,
+      {
+        method: 'DELETE'
+      }
+    )
+  },
+
+  async updateLink(linkId: string, editLink: EditLinkForm) {
+    return await fetch<DeleteLinkResponse>(UPDATE_LINK_ENDPOINT_API, {
+      method: 'PATCH',
+      body: {
+        linkId: linkId,
+        title: editLink.title,
+        active: editLink.active
       }
     })
   }

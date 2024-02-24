@@ -1,5 +1,7 @@
 <template>
   <div class="h-full relative">
+    <MobileSlider />
+
     <div :class="sidebarClass">
       <Sidebar :close-sidebar="sidebarClosed" />
       <Button
@@ -19,7 +21,7 @@
     </div>
     <div :class="wrapperClass">
       <Navbar />
-      <main class="p-10">
+      <main class="p-10 h-[calc(100vh-88px)]">
         <Suspense>
           <slot />
         </Suspense>

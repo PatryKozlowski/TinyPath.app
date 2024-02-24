@@ -112,14 +112,14 @@ const create = async (values: CreateLinkForm) => {
 
   const cleanedValues = title === undefined ? rest : values
 
-  const { data } = await useAsyncData(() =>
-    useRepository.createShortLink(cleanedValues)
-  ).finally(() => {
-    isLoading.value = false
-  })
+  const data = await useRepository
+    .createShortLink(cleanedValues)
+    .finally(() => {
+      isLoading.value = false
+    })
 
-  if (data.value) {
-    createdLink.value = data.value.link
+  if (data.link) {
+    createdLink.value = data.link
   } else {
     createdLink.value = ''
   }

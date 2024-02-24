@@ -1,6 +1,13 @@
 <template>
   <div class="flex items-center p-6 shadow-lg bg-[#111827] text-white">
-    <!-- MobileSlider -->
+    <Button
+      class="md:hidden"
+      variant="secondary"
+      @click="mobileSlider.toggleMobileSlider()"
+      v-if="isAuthenticated"
+    >
+      <Icon name="lucide:menu" class="w-5 h-5" />
+    </Button>
     <div class="flex w-full justify-end">
       <DropdownMenu v-if="isAuthenticated">
         <DropdownMenuTrigger as-child>
@@ -26,10 +33,8 @@
           <DropdownMenuItem>Team</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem class="cursor-pointer" @click="authStore.logout()">
-            <!-- <Button variant="link"> -->
             <Icon name="lucide:log-out" class="w-5 h-5 mr-2" />
             Logout
-            <!-- </Button> -->
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -51,6 +56,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 const authStore = useAuthStore()
+const mobileSlider = useMobileSliderStore()
 
 const { user, isAuthenticated } = storeToRefs(authStore)
 </script>

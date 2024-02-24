@@ -56,7 +56,7 @@ const runTimeConfig = useRuntimeConfig()
 const RESEND_ENDPOINT_API = `${runTimeConfig.public.BASE_URL}/api/User/RegenerateConfirmEmailCommand`
 const REDIRETECT_ENDPOINT = '/auth/confirmation'
 
-const formSchemaLogin = toTypedSchema(
+const formSchema = toTypedSchema(
   z.object({
     email: z
       .string()
@@ -66,7 +66,7 @@ const formSchemaLogin = toTypedSchema(
 )
 
 const { handleSubmit, errors } = useForm<Resend>({
-  validationSchema: formSchemaLogin
+  validationSchema: formSchema
 })
 
 const onSubmit = handleSubmit((values, action) => {

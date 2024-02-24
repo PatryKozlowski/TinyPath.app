@@ -14,6 +14,11 @@ export type RegisterForm = {
   repeatPassword: string
 }
 
+export type ResetPasswordForm = {
+  password: string
+  repeatPassword: string
+}
+
 export type Hidden = {
   password: boolean
   repeatPassword: boolean
@@ -65,4 +70,39 @@ export type CheckoutForm = {
 
 export type CheckoutResponse = {
   link: string
+}
+
+export type LinksResponse = {
+  urls: [
+    {
+      id: string
+      url: string
+      title: string
+      active: boolean
+      isCustom: boolean
+    }
+  ]
+  totalPages: number
+  totalRecords: number
+}
+
+export type LinkResponse = {
+  id: string
+  url: string
+  title: string
+  active: boolean
+  isCustom: boolean
+  orginalUrl: string
+  created: Date
+  updated: Date
+  code: string
+}
+
+export type DeleteLinkResponse = {
+  success: boolean
+}
+
+export type EditLinkForm = {
+  title?: string
+  active?: boolean
 }

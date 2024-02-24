@@ -4,13 +4,15 @@ export default defineNuxtConfig({
   imports: {
     dirs: ['stores', 'utils', 'types']
   },
+  css: ['@/assets/css/main.css'],
   modules: [
     '@nuxtjs/tailwindcss',
     'shadcn-nuxt',
     'nuxt-icon',
     '@nuxtjs/eslint-module',
     '@pinia/nuxt',
-    '@pinia-plugin-persistedstate/nuxt'
+    '@pinia-plugin-persistedstate/nuxt',
+    'dayjs-nuxt'
   ],
   shadcn: {
     /**

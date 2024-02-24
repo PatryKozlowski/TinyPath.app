@@ -3,6 +3,7 @@ import { useToast } from '@/components/ui/toast/use-toast'
 export default defineNuxtPlugin({
   setup() {
     const { toast } = useToast()
+    const router = useRouter()
     const authUser = useAuthStore()
     const api = $fetch.create({
       baseURL: useRuntimeConfig().public.BASE_URL,
@@ -16,10 +17,14 @@ export default defineNuxtPlugin({
         }
       },
       onResponseError({ request, response, options }) {
-        toast({
-          description: response._data.error,
-          variant: 'destructive'
-        })
+        if (response._data.error === 'UserAlreadyLoggedIn') {
+          router.push('/dashboard')
+        } else {
+          toast({
+            description: response._data.error,
+            variant: 'destructive'
+          })
+        }
       }
     })
 

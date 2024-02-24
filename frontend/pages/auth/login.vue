@@ -71,7 +71,7 @@
           </NuxtLink>
         </Button>
         <Button variant="link" size="sm">
-          <NuxtLink to="/auth/forgotpassword" class="text-white text-sm">
+          <NuxtLink to="/auth/forgot-password" class="text-white text-sm">
             I dont remeber my password
           </NuxtLink>
         </Button>

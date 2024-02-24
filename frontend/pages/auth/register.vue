@@ -110,7 +110,7 @@
         </Button>
         <Button variant="link" size="sm">
           <NuxtLink
-            to="/auth/forgotpassword"
+            to="/auth/forgot-password"
             class="text-white text-xs md:text-sm"
           >
             I dont remeber my password
@@ -125,7 +125,6 @@
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
-import { useToast } from '@/components/ui/toast/use-toast'
 
 useHead({
   title: 'TinyPath - Register',

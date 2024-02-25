@@ -10,7 +10,7 @@ public abstract class EmailSenderSchemas
                       $"Thank you for registering an account with us. " +
                       $"To complete the registration process, please click on the link below:<br /><br />" +
                       $"<a href=\"{link}\">Confirm your email</a><br /><br />" +
-                      $"This link will expire in 24 hours.<br /><br />" +
+                      $"This link will expire in 15 minutes.<br /><br />" +
                       $"Sincerely,<br />Your Application Team";
         
         return (subject, content);
@@ -35,6 +35,19 @@ public abstract class EmailSenderSchemas
         var content = $"Dear User,<br /><br />" +
                       $"You can find the link to your subscription invoice below:<br /><br />" +
                       $"<a href=\"{link}\">Click to check your invoice</a><br /><br />" +
+                      $"Sincerely,<br />Your Application Team";
+        
+        return (subject, content);
+    }
+    
+    public static (string subject, string content) EmailWithResetPasswordLink(string link)
+    {
+        var subject = "Reset your password";
+        
+        var content = $"Dear User,<br /><br />" +
+                      $"You can reset your password by clicking on the link below:<br /><br />" +
+                      $"<a href=\"{link}\">Reset your password</a><br /><br />" +
+                      $"This link will expire in 15 minutes.<br /><br />" +
                       $"Sincerely,<br />Your Application Team";
         
         return (subject, content);

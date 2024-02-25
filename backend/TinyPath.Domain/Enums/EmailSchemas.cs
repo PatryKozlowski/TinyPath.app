@@ -4,5 +4,6 @@ public enum EmailSchemas
 {
     ConfirmEmail,
     LinksCountEmail,
-    SubscriptionInvoiceEmail
+    SubscriptionInvoiceEmail,
+    ResetPasswordEmail
 }

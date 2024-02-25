@@ -22,12 +22,10 @@ public abstract class ConfirmEmailCommand
     public class Handler : BaseCommandHandler, IRequestHandler<Request, Response>
     {
         private readonly IAuthDataProvider _authDataProvider;
-        private readonly IGetConfirmationLink _confirmationLink;
         
-        public Handler(IApplicationDbContext dbContext, IAuthDataProvider authDataProvider, IGetConfirmationLink confirmationLink) : base(dbContext)
+        public Handler(IApplicationDbContext dbContext, IAuthDataProvider authDataProvider) : base(dbContext)
         {
             _authDataProvider = authDataProvider;
-            _confirmationLink = confirmationLink;
         }
 
         public async Task<Response> Handle(Request request, CancellationToken cancellationToken)

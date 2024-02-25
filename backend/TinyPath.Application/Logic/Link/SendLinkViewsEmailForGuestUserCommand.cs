@@ -1,5 +1,6 @@
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using TinyPath.Application.Exceptions;
 using TinyPath.Application.Interfaces;
 using TinyPath.Application.Logic.Abstractions;
@@ -28,14 +29,16 @@ public abstract class SendLinkViewsEmailForGuestUserCommand
         private readonly IGetLinkOptions _getLinkOptions;
         private readonly IEmailSchema _emailSchema;
         private readonly IEmailSender _emailSender;
+        private readonly ILogger<SendLinkViewsEmailForGuestUserCommand> _logger;
         
-        public Handler(IApplicationDbContext dbContext, IGuestManager guestManager, ILinkManager linkManager, IEmailSchema emailSchema, IEmailSender emailSender, IGetLinkOptions getLinkOptions) : base(dbContext)
+        public Handler(IApplicationDbContext dbContext, IGuestManager guestManager, ILinkManager linkManager, IEmailSchema emailSchema, IEmailSender emailSender, IGetLinkOptions getLinkOptions, ILogger<SendLinkViewsEmailForGuestUserCommand> logger) : base(dbContext)
         {
             _guestManager = guestManager;
             _linkManager = linkManager;
             _emailSchema = emailSchema;
             _emailSender = emailSender;
             _getLinkOptions = getLinkOptions;
+            _logger = logger;
         }
 
         public async Task<Response> Handle(Request request, CancellationToken cancellationToken)
@@ -61,9 +64,17 @@ public abstract class SendLinkViewsEmailForGuestUserCommand
 
             var emailSchema = _emailSchema.GetSchema(EmailSchemas.LinksCountEmail, linkViewsCount);
 
-            await _emailSender.SendEmailAsync(request.Email, emailSchema.subject, emailSchema.content);
-            
-            return new Response() { Message = "EmailSent" };
+            try
+            {
+                await _emailSender.SendEmailAsync(request.Email, emailSchema.subject, emailSchema.content);
+
+                return new Response() { Message = "EmailSent" };
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "ErrorSendingEmail");
+                throw new Exception("Internal Server");
+            }
         }
     }
     

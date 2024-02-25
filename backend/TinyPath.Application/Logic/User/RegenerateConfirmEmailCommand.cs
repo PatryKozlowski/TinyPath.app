@@ -1,6 +1,7 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TinyPath.Application.Exceptions;
 using TinyPath.Application.Interfaces;
 using TinyPath.Application.Logic.Abstractions;
@@ -30,14 +31,16 @@ public abstract class RegenerateConfirmEmailCommand
         private readonly IGetConfirmationLink _getConfirmationLink;
         private readonly IEmailSender _emailSender;
         private readonly IEmailSchema _emailSchema;
+        private readonly ILogger<RegenerateConfirmEmailCommand> _logger;
         
-        public Handler(IApplicationDbContext dbContext, IJwtManager jwtManager, IGetJwtOptions getJwtOptions, IGetConfirmationLink getConfirmationLink, IEmailSender emailSender, IEmailSchema emailSchema) : base(dbContext)
+        public Handler(IApplicationDbContext dbContext, IJwtManager jwtManager, IGetJwtOptions getJwtOptions, IGetConfirmationLink getConfirmationLink, IEmailSender emailSender, IEmailSchema emailSchema, ILogger<RegenerateConfirmEmailCommand> logger) : base(dbContext)
         {
             _jwtManager = jwtManager;
             _getJwtOptions = getJwtOptions;
             _getConfirmationLink = getConfirmationLink;
             _emailSender = emailSender;
             _emailSchema = emailSchema;
+            _logger = logger;
         }
 
         public async Task<Response> Handle(Request request, CancellationToken cancellationToken)
@@ -80,11 +83,18 @@ public abstract class RegenerateConfirmEmailCommand
 
                 var emailMessage = _emailSchema.GetSchema(EmailSchemas.ConfirmEmail, activationLink);
 
-                await _emailSender.SendEmailAsync(user.Email, emailMessage.subject, emailMessage.content);
-                
-                await _dbContext.SaveChangesAsync();
+                try
+                {
+                    await _emailSender.SendEmailAsync(user.Email, emailMessage.subject, emailMessage.content);
 
-                return new Response { Message = "EmailConfirmationSent" };
+                    await _dbContext.SaveChangesAsync();
+
+                    return new Response { Message = "EmailConfirmationSent" };
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Error sending email");
+                }
             }
             
             throw new ErrorException("ConfirmationCodeNotExpired");

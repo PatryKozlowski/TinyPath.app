@@ -66,6 +66,12 @@ public class LinkController : BaseController
         return await ProcessRequestAsync(request);
     }
     
+    [HttpGet]
+    public async Task<ActionResult> GetLinkStatsCommand([FromQuery] GetLinkStatsCommand.Request request)
+    {
+        return await ProcessRequestAsync(request);
+    }
+    
     private async Task<ActionResult> ProcessRequestAsync<TRequest>(TRequest request)
     {
         var response = await _mediator.Send(request!);

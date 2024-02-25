@@ -12,6 +12,7 @@ public class EmailSchema : IEmailSchema
             EmailSchemas.ConfirmEmail => EmailSenderSchemas.EmailConfirmationSchema(stringParam!),
             EmailSchemas.LinksCountEmail => EmailSenderSchemas.EmailWithLinkViewsCountSchema(stringParam!),
             EmailSchemas.SubscriptionInvoiceEmail => EmailSenderSchemas.EmailWithSubscriptionInvoice(stringParam!),
+            EmailSchemas.ResetPasswordEmail => EmailSenderSchemas.EmailWithResetPasswordLink(stringParam!),
             _ => throw new ArgumentOutOfRangeException(nameof(emailSchema), emailSchema, null)
         };
     }

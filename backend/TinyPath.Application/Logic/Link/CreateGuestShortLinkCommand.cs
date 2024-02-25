@@ -16,7 +16,6 @@ public abstract class CreateGuestShortLinkCommand
     public class Request : IRequest<Response>
     {
         public required string Url { get; init; } 
-        public string? Title { get; init; }
     }
     
     public class Response
@@ -81,7 +80,6 @@ public abstract class CreateGuestShortLinkCommand
                 Code = linkCode,
                 Url = fullLink,
                 OriginalUrl = request.Url,
-                Title = request.Title
             };
             
             linkEntity.GuestId = guest.Id;

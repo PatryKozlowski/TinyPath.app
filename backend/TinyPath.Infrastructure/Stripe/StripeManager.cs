@@ -196,6 +196,13 @@ public class StripeManager : IStripeManager
         
         var emailSchema = _emailSchema.GetSchema(EmailSchemas.SubscriptionInvoiceEmail,linkToInvoice);
         
-        await _emailSender.SendEmailAsync(invoice.CustomerEmail, emailSchema.subject, emailSchema.content);
+        try
+        {
+            await _emailSender.SendEmailAsync(invoice.CustomerEmail, emailSchema.subject, emailSchema.content);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "ErrorSendingEmail");
+        }
     }
 }

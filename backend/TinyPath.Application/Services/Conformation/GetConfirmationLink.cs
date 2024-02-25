@@ -17,8 +17,9 @@ public class GetConfirmationLink : IGetConfirmationLink
         return link;
     }
 
-    public string RedirectConfirmationLink()
+    public string EmailConfirmationResetPasswordLink(string confirmationToken)
     {
-        return _confirmatioOptions.RedirectConfirmationUrl;
+        var link = _confirmatioOptions.EmailConfirmationResetPasswordUrl + confirmationToken;
+        return link;
     }
 }

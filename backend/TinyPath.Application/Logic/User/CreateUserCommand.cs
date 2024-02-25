@@ -1,6 +1,7 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TinyPath.Application.Exceptions;
 using TinyPath.Application.Interfaces;
 using TinyPath.Application.Logic.Abstractions;
@@ -32,8 +33,9 @@ public abstract class CreateUserCommand
         private readonly IEmailSender _emailSender;
         private readonly IEmailSchema _emailSchema;
         private readonly IGetConfirmationLink _confirmationLink;
+        private readonly ILogger<CreateUserCommand> _logger;
         
-        public Handler(IApplicationDbContext dbContext, IPasswordManager passwordManager, IJwtManager jwtManager, IGetJwtOptions getJwtOptions, IEmailSender emailSender, IEmailSchema emailSchema, IGetConfirmationLink confirmationLink) : base(dbContext)
+        public Handler(IApplicationDbContext dbContext, IPasswordManager passwordManager, IJwtManager jwtManager, IGetJwtOptions getJwtOptions, IEmailSender emailSender, IEmailSchema emailSchema, IGetConfirmationLink confirmationLink, ILogger<CreateUserCommand> logger) : base(dbContext)
         {
             _passwordManager = passwordManager;
             _jwtManager = jwtManager;
@@ -41,6 +43,7 @@ public abstract class CreateUserCommand
             _emailSender = emailSender;
             _emailSchema = emailSchema;
             _confirmationLink = confirmationLink;
+            _logger = logger;
         }
 
         public async Task<Response> Handle(Request request, CancellationToken cancellationToken)
@@ -86,12 +89,20 @@ public abstract class CreateUserCommand
 
            var emailConfirmationSchema = _emailSchema.GetSchema(EmailSchemas.ConfirmEmail, emailConfirmationLink);
            
-            await _emailSender.SendEmailAsync(createdUser.Email, emailConfirmationSchema.subject,
-                emailConfirmationSchema.content);
+           try
+           {
+               await _emailSender.SendEmailAsync(createdUser.Email, emailConfirmationSchema.subject,
+                   emailConfirmationSchema.content);
 
-            await _dbContext.SaveChangesAsync();
+               await _dbContext.SaveChangesAsync();
 
-            return new Response() { Message = "UserCreatedConfirmYourEmail" };
+               return new Response() { Message = "UserCreatedConfirmYourEmail" };
+           }
+           catch (Exception e)
+           {
+                _logger.LogError(e, "ErrorSendingEmail");
+                throw new Exception("Internal Server");
+           }
         }
         
         public class Validator : AbstractValidator<Request>

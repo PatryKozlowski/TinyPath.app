@@ -129,7 +129,16 @@ public class LinkManager : ILinkManager
             }
             else
             {
-                _dbContext.LinksStats.AddRange(aggregatedStat);
+                var linkExists = await _dbContext.Links.AnyAsync(l => l.Id == aggregatedStat.LinkId);
+                if (linkExists)
+                {
+                    _dbContext.LinksStats.Add(aggregatedStat);
+                }
+                else
+                {
+                    _logger.LogWarning($"Link with id: {aggregatedStat.LinkId} not found");
+                
+                }
             }
         }
         

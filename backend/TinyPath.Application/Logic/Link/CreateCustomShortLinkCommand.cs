@@ -16,6 +16,7 @@ public abstract class CreateCustomShortLinkCommand
     {
         public required string Url { get; init; } 
         public required string CustomLink { get; init; }
+        public string? Title { get; init; }
     }
     
     public class Response
@@ -82,7 +83,8 @@ public abstract class CreateCustomShortLinkCommand
                 Url = fullLink,
                 OriginalUrl = request.Url,
                 Custom = true,
-                User = user
+                User = user,
+                Title = request.Title
             };
             
             _dbContext.Links.Add(link);

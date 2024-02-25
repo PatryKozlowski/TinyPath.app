@@ -79,6 +79,18 @@ public class UserController : BaseController
         return await ProcessRequestAsync(new GetAuthenticatedUserCommand.Request());
     }
     
+    [HttpPost]
+    public async Task<ActionResult> SendEmailToResetPasswordCommand([FromBody] SendEmailToResetPasswordCommand.Request request)
+    {
+        return await ProcessRequestAsync(request);
+    }
+    
+    [HttpPost]
+    public async Task<ActionResult> ResetUserPasswordCommand([FromBody] ResetUserPasswordCommand.Request request)
+    {
+        return await ProcessRequestAsync(request);
+    }
+    
     private void SetTokenCookie(string token, bool isRefreshToken = false)
     {
         var cookieOptions = new CookieOptions

@@ -4,6 +4,7 @@
     <form
       class="flex flex-col space-y-6"
       @submit.prevent="handleEmailToResetPassword"
+      v-if="!message"
     >
       <FormField v-slot="{ componentField }" name="email" class="mb-4">
         <FormItem>
@@ -30,6 +31,9 @@
         <template v-else> Go ! </template>
       </Button>
     </form>
+    <div v-else>
+      <p class="text-center text-white">{{ message }}</p>
+    </div>
   </div>
 </template>
 
@@ -53,6 +57,9 @@ useHead({
 })
 
 const isLoading = ref(false)
+const message = ref('')
+const { $api } = useNuxtApp()
+const useRepository = repository($api)
 
 const formSchema = toTypedSchema(
   z.object({
@@ -68,6 +75,15 @@ const { handleSubmit, errors } = useForm<{ email: string }>({
 })
 
 const handleEmailToResetPassword = handleSubmit(async (values) => {
-  console.log(values)
+  isLoading.value = true
+  useRepository
+    .sendEmailToResetPassword(values.email)
+    .then(() => {
+      message.value =
+        'An email has been sent to you with link to reset your password.'
+    })
+    .finally(() => {
+      isLoading.value = false
+    })
 })
 </script>

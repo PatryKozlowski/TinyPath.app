@@ -1,7 +1,11 @@
 <template>
   <div class="flex flex-col w-full space-y-6">
     <h1 class="text-center text-2xl text-white">Reset password</h1>
-    <form class="flex flex-col space-y-6" @submit.prevent="handleResetPassword">
+    <form
+      class="flex flex-col space-y-6"
+      @submit.prevent="handleResetPassword"
+      v-if="!message"
+    >
       <FormField v-slot="{ componentField }" name="password" class="mb-4">
         <FormItem>
           <FormControl>
@@ -71,6 +75,9 @@
         <template v-else> Reset password </template>
       </Button>
     </form>
+    <div v-else>
+      <p class="text-center text-white">{{ message }}</p>
+    </div>
   </div>
 </template>
 
@@ -94,6 +101,10 @@ useHead({
   ]
 })
 const route = useRoute()
+const token = route.query.Token as string
+const message = ref('')
+const { $api } = useNuxtApp()
+const useRepository = repository($api)
 
 const isLoading = ref(false)
 
@@ -141,6 +152,21 @@ const { handleSubmit, errors } = useForm<ResetPasswordForm>({
 })
 
 const handleResetPassword = handleSubmit(async (values) => {
-  console.log(values)
+  const resetPasswordForm = {
+    password: values.password,
+    repeatPassword: values.repeatPassword,
+    token
+  }
+  console.log(resetPasswordForm)
+
+  isLoading.value = true
+  await useRepository
+    .resetPassword(resetPasswordForm)
+    .then(() => {
+      message.value = 'Password has been reset successfully'
+    })
+    .finally(() => {
+      isLoading.value = false
+    })
 })
 </script>

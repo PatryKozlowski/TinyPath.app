@@ -16,6 +16,9 @@ const GET_LINKS_ENDPOINT_API = '/api/Link/GetLinksCommand'
 const GET_LINK_ENDPOINT_API = '/api/Link/GetLinkCommand'
 const DELETE_LINK_ENDPOINT_API = '/api/Link/DeleteLinkCommand'
 const UPDATE_LINK_ENDPOINT_API = '/api/Link/UpdateLinkCommand'
+const FORGOT_PASSWORD_SEND_EMAIL_ENDPOINT_API =
+  '/api/User/SendEmailToResetPasswordCommand'
+const FORGOT_PASSWORD_RESET_ENDPOINT_API = '/api/User/ResetUserPasswordCommand'
 
 export const repository = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
   async login(formValue: LoginForm): Promise<LoginResponse> {
@@ -142,5 +145,35 @@ export const repository = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
         active: editLink.active
       }
     })
+  },
+
+  async sendEmailToResetPassword(email: string) {
+    return await fetch<{ message: string }>(
+      FORGOT_PASSWORD_SEND_EMAIL_ENDPOINT_API,
+      {
+        method: 'POST',
+        body: {
+          email: email
+        }
+      }
+    )
+  },
+
+  async resetPassword(resetPassword: {
+    password: string
+    repeatPassword: string
+    token: string
+  }) {
+    return await fetch<{ message: string }>(
+      FORGOT_PASSWORD_RESET_ENDPOINT_API,
+      {
+        method: 'POST',
+        body: {
+          password: resetPassword.password,
+          repeatPassword: resetPassword.repeatPassword,
+          token: resetPassword.token
+        }
+      }
+    )
   }
 })

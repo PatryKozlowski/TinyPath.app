@@ -19,6 +19,8 @@ export default defineNuxtPlugin({
       onResponseError({ request, response, options }) {
         if (response._data.error === 'UserAlreadyLoggedIn') {
           router.push('/dashboard')
+        } else if (response._data.error === 'GuestUserNotFound') {
+          return
         } else {
           toast({
             description: response._data.error,

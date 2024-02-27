@@ -37,7 +37,7 @@
     >
       {{ title || '[Edit your link to create your title]' }}
     </h2>
-    <LinkDisplay title="Link" :url="link" />
+    <LinkDisplay :url="link" :show-title="false" class="text-sm" />
   </div>
 </template>
 

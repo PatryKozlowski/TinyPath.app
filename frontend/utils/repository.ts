@@ -7,7 +7,8 @@ const LOADED_USER_DATA_ENDPOINT_API = '/api/User/GetAuthenticatedUserCommand'
 const LOGOUT_USER_ENDPOINT_API = '/api/User/Logout'
 const CREATE_LINK_ENDPOINT_API = '/api/Link/CreateShortLinkCommand'
 const CREATE_CUSTOM_LINK_ENDPOINT_API = '/api/Link/CreateCustomShortLinkCommand'
-const CREATE_LINK_GUEST_ENDPOINT_API = '/api/Link/CreateShortLinkCommand'
+const CREATE_LINK_GUEST_ENDPOINT_API =
+  '/api/Link/CreateGuestCustomShortLinkCommand'
 const GUEST_LINKS_ENDPOINT_API = '/api/Guest/GetGuestCommand'
 const GUEST_EMAIL_ENDPOINT_API =
   '/api/Link/SendLinkViewsEmailForGuestUserCommand'
@@ -19,6 +20,9 @@ const UPDATE_LINK_ENDPOINT_API = '/api/Link/UpdateLinkCommand'
 const FORGOT_PASSWORD_SEND_EMAIL_ENDPOINT_API =
   '/api/User/SendEmailToResetPasswordCommand'
 const FORGOT_PASSWORD_RESET_ENDPOINT_API = '/api/User/ResetUserPasswordCommand'
+const GET_LINK_STATS_BY_ID_ENDPOINT_API = '/api/Link/GetLinkStatsCommand'
+const GET_LINK_VIEWS_BY_ID_ENDPOINT_API =
+  '/api/Link/GetLinkViewsCountForGuestUser'
 
 export const repository = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
   async login(formValue: LoginForm): Promise<LoginResponse> {
@@ -68,8 +72,7 @@ export const repository = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
     return await fetch<CreateLinkResponse>(CREATE_LINK_GUEST_ENDPOINT_API, {
       method: 'POST',
       body: {
-        url: createLink.url,
-        title: createLink.title
+        url: createLink.url
       }
     })
   },
@@ -173,6 +176,24 @@ export const repository = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
           repeatPassword: resetPassword.repeatPassword,
           token: resetPassword.token
         }
+      }
+    )
+  },
+
+  async getLinkStatsById(linkId: string) {
+    return await fetch<LinkStatsResponse>(
+      `${GET_LINK_STATS_BY_ID_ENDPOINT_API}?LinkId=${linkId}`,
+      {
+        method: 'GET'
+      }
+    )
+  },
+
+  async getLinkViewsById(linkId: string) {
+    return await fetch<{ linkViewsCount: number; linkUrl: string }>(
+      `${GET_LINK_VIEWS_BY_ID_ENDPOINT_API}?LinkId=${linkId}`,
+      {
+        method: 'GET'
       }
     )
   }

@@ -1,6 +1,6 @@
 <template>
   <div class="flex space-x-2 items-center bg-slate-200 p-2 rounded-xl">
-    <h2 class="truncate max-w-xs">{{ title }}:</h2>
+    <h2 class="truncate max-w-xs" v-if="showTitle">{{ title }}:</h2>
     <p class="truncate max-w-xs">{{ url }}</p>
     <a
       :href="url"
@@ -16,6 +16,10 @@
 <script setup lang="ts">
 defineProps({
   title: String,
-  url: String
+  url: String,
+  showTitle: {
+    type: Boolean,
+    default: true
+  }
 })
 </script>

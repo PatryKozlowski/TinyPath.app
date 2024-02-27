@@ -37,20 +37,20 @@
           </p>
           <p>more links</p>
         </div>
-        <div v-if="!isAuthenticated && !isLoadingGuest && links === 0">
-          <p class="text-red-500">You can't create more links</p>
+        <div
+          v-if="!isAuthenticated && !isLoadingGuest && links === 0"
+          class="text-red-500"
+        >
+          <p>You can't create more links</p>
+          <p>
+            Blocked until
+            {{
+              dayjs(guestStore.guestData?.blockedUntil).format(
+                'DD.MM.YYYY HH:mm'
+              )
+            }}
+          </p>
         </div>
-        <FormField v-slot="{ componentField }" name="title" class="mb-4">
-          <FormItem class="flex flex-col">
-            <FormLabel class="mb-4 text-sm text-black font-light">
-              Title (optional)
-            </FormLabel>
-            <FormControl>
-              <Input type="text" v-bind="componentField" />
-            </FormControl>
-            <div class="text-red-500 h-6">{{ errors.title }}</div>
-          </FormItem>
-        </FormField>
         <Separator />
         <div class="flex w-full justify-center flex-col md:flex-row">
           <Button
@@ -103,6 +103,7 @@ const authStore = useAuthStore()
 const { isAuthenticated } = storeToRefs(authStore)
 const { $api } = useNuxtApp()
 const useRepository = repository($api)
+const dayjs = useDayjs()
 
 const guestStore = useGuestStore()
 const { links, isSendEmailForLink } = storeToRefs(guestStore)
@@ -136,12 +137,9 @@ const { handleSubmit, errors } = useForm<CreateLinkForm>({
 
 const create = async (values: CreateLinkForm) => {
   isLoading.value = true
-  const { title, ...rest } = values
-
-  const cleanedValues = title === undefined ? rest : values
 
   const data = await useRepository
-    .createShortLink(cleanedValues)
+    .createShortLinkForGuest(values)
     .finally(() => {
       isLoading.value = false
     })

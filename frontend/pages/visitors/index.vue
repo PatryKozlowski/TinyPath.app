@@ -6,7 +6,7 @@
       class="rounded-xl bg-[#111827] shadow-xl p-4 flex flex-col space-y-2 md:w-[400px] w-[350px] text-white"
       v-if="!isLoading"
     >
-      <template v-if="url && visitors">
+      <template v-if="url">
         <span class="md:flex md:items-center text-sm md:space-x-1">
           <p>Your link:</p>
           <a
@@ -52,23 +52,21 @@ const linkId = ref('')
 const visitors = ref(0)
 const url = ref('')
 const isLoading = ref(true)
-const runTimeConfig = useRuntimeConfig()
+const { $api } = useNuxtApp()
+const useRepository = repository($api)
 
 onMounted(async () => {
   linkId.value = route.query.linkId as string
 
-  await $fetch(
-    `${runTimeConfig.public.BASE_URL}/Link/GetLinkViewsCountForGuestUser?linkId=${linkId.value}`,
-    {
-      method: 'GET',
-      onResponse({ request, response, options }) {
-        console.log(response._data)
-        visitors.value = response._data.linkViewsCount
-        url.value = response._data.linkUrl
-      }
-    }
-  ).finally(() => {
-    isLoading.value = false
-  })
+  const data = await useRepository
+    .getLinkViewsById(linkId.value)
+    .finally(() => {
+      isLoading.value = false
+    })
+
+  if (data) {
+    url.value = data.linkUrl
+    visitors.value = data.linkViewsCount
+  }
 })
 </script>

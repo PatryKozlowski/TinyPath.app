@@ -45,7 +45,7 @@
     <!-- Free content  -->
     <div
       class="px-4"
-      v-if="!authStore?.user?.isAdmin || authStore?.user?.isSubscribed"
+      v-if="!authStore?.user?.isAdmin && !authStore?.user?.isSubscribed"
     >
       <Button class="bg-violet-500 hover:bg-violet-400 w-full">
         <div

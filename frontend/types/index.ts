@@ -106,3 +106,11 @@ export type EditLinkForm = {
   title?: string
   active?: boolean
 }
+
+export type LinkStatsResponse = {
+  visits: number
+  browser: string[]
+  platform: string[]
+  device: string[]
+  country: string[]
+}

@@ -19,6 +19,12 @@ public class StripeController : BaseController
     }
     
     [HttpPost]
+    public async Task<IActionResult> CreateBillingPortal()
+    {
+        return await ProcessRequestAsync(new CreateBillingPortalCommand.Request());
+    }
+    
+    [HttpPost]
     public async Task<IActionResult> HandleWebhook()
     {
         var response = await _mediator.Send(new HandleWebhookCommand.Request());

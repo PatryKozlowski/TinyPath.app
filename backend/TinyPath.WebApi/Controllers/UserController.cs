@@ -91,6 +91,18 @@ public class UserController : BaseController
         return await ProcessRequestAsync(request);
     }
     
+    [HttpGet]
+    public async Task<ActionResult> SendEmailWithDeleteAccountCodeCommand()
+    {
+        return await ProcessRequestAsync(new SendEmailWithDeleteAccountCodeCommand.Request());
+    }
+    
+    [HttpPost]
+    public async Task<ActionResult> DeleteAccountCommand([FromBody] DeleteAccountCommand.Request request)
+    {
+        return await ProcessRequestAsync(request);
+    }
+    
     private void SetTokenCookie(string token, bool isRefreshToken = false)
     {
         var cookieOptions = new CookieOptions

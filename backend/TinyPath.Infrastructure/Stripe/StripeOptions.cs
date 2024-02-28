@@ -9,4 +9,5 @@ public class StripeOptions
     public required string SuccessUrl { get; init; }
     public required string CancelUrl { get; init; }
     public required string PaymentMode { get; init; }
+    public required string CustomerBillingPortalRedirectedUrl { get; init; }
 }

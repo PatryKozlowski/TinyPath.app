@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using TinyPath.Application.Interfaces;
 
@@ -21,5 +22,14 @@ public class UserManager : IUserManager
         _dbContext.Sessions.Remove(userSession!);
         
         await _dbContext.SaveChangesAsync();
+    }
+    
+    public int GenerateDeleteCode()
+    {
+        using var rng = new RNGCryptoServiceProvider();
+        var randomNumber = new byte[4];
+        rng.GetBytes(randomNumber);
+        var value = BitConverter.ToInt32(randomNumber, 0) & int.MaxValue;
+        return 100000 + value % 900000;
     }
 }

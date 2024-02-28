@@ -5,5 +5,6 @@ public enum EmailSchemas
     ConfirmEmail,
     LinksCountEmail,
     SubscriptionInvoiceEmail,
-    ResetPasswordEmail
+    ResetPasswordEmail,
+    DeleteAccountEmail
 }

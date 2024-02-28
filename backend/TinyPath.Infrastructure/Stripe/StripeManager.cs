@@ -1,4 +1,3 @@
-using CacheManager.Core.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -7,6 +6,8 @@ using Stripe.Checkout;
 using TinyPath.Application.Exceptions;
 using TinyPath.Application.Interfaces;
 using TinyPath.Domain.Enums;
+using SessionCreateOptions = Stripe.Checkout.SessionCreateOptions;
+using SessionService = Stripe.Checkout.SessionService;
 
 namespace TinyPath.Infrastructure.Stripe;
 
@@ -28,7 +29,30 @@ public class StripeManager : IStripeManager
         _emailSender = emailSender;
         _options = options.Value;
     }
+    
+    public async Task<bool> CancelSubscription(string subscriptionId)
+    {
+        
+        var service = new SubscriptionService();
+        var sub = await service.CancelAsync(subscriptionId);
+        
+        return sub.Status == "canceled";
+    }
+    
+    public async Task<string> CreateBillingPortal(string customerId)
+    {
+        var returnUrl = _options.CustomerBillingPortalRedirectedUrl;
+        var options = new global::Stripe.BillingPortal.SessionCreateOptions()
+        {
+            Customer = customerId,
+            ReturnUrl = returnUrl,
+        };
+        var service = new global::Stripe.BillingPortal.SessionService();
+        var session = await service.CreateAsync(options);
 
+        return session.Url;
+    }
+    
     public async Task<string> CreateCheckoutSession(string customerId, string planId)
     {
         var paymentMethodTypes = _options.PaymentMethodTypes;
@@ -74,6 +98,9 @@ public class StripeManager : IStripeManager
                     break;
                 case "customer.subscription.created":
                     await HandleCheckoutSessionCompleted(stripeEvent);
+                    break;
+                case "customer.subscription.deleted":
+                    await HandleCancelSubscription(stripeEvent);
                     break;
                 case "invoice.paid":
                     await HandleInvoicePaid(stripeEvent);
@@ -171,6 +198,33 @@ public class StripeManager : IStripeManager
         await _dbContext.SaveChangesAsync();
     }
     
+    private async Task HandleCancelSubscription(Event stripeEvent)
+    {
+        var subscription = stripeEvent.Data.Object as Subscription;
+        
+        if (subscription is null)
+        {
+            _logger.LogError("Stripe event data is not a session");
+            return;
+        }
+        
+        var subscriptionEntity = await _dbContext
+            .Subscriptions
+            .FirstOrDefaultAsync(x => x.SubscriptionId == subscription.Id);
+        
+        if (subscriptionEntity is null)
+        {
+            _logger.LogError("Subscription not found");
+            throw new ErrorException("SubscriptionNotFound");
+        }
+        
+        subscriptionEntity.Status = subscription.Status;
+        
+        _dbContext.Subscriptions.Update(subscriptionEntity);
+        
+        await _dbContext.SaveChangesAsync();
+    }
+    
     private async Task HandleInvoicePaid(Event stripeEvent)
     {
         var invoice = stripeEvent.Data.Object as Invoice;
@@ -188,11 +242,11 @@ public class StripeManager : IStripeManager
             _logger.LogError("Subscription not found");
         }
         
-        subscription!.Status = invoice!.Status;
+        // subscription!.Status = invoice!.Status;
         
         await _dbContext.SaveChangesAsync();
         
-        var linkToInvoice = invoice.HostedInvoiceUrl;
+        var linkToInvoice = invoice!.HostedInvoiceUrl;
         
         var emailSchema = _emailSchema.GetSchema(EmailSchemas.SubscriptionInvoiceEmail,linkToInvoice);
         

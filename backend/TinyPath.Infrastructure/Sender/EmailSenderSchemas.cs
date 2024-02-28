@@ -52,4 +52,16 @@ public abstract class EmailSenderSchemas
         
         return (subject, content);
     }
+    
+    public static (string subject, string content) EmailWithDeleteAccountCode(int code)
+    {
+        var subject = "Delete your account";
+        
+        var content = $"Dear User,<br /><br />" +
+                      $"To delete your account, please use the following code:<br /><br />" +
+                      $"{code}<br /><br />" +
+                      $"Sincerely,<br />Your Application Team";
+        
+        return (subject, content);
+    }
 }

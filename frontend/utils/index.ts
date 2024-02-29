@@ -20,7 +20,7 @@ export const sidebarLinks = [
   {
     label: 'Settings',
     icon: 'lucide:settings',
-    route: '/settings',
+    route: '/dashboard/settings',
     color: 'text-violet-400'
   }
 ]

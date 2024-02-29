@@ -13,6 +13,7 @@ const GUEST_LINKS_ENDPOINT_API = '/api/Guest/GetGuestCommand'
 const GUEST_EMAIL_ENDPOINT_API =
   '/api/Link/SendLinkViewsEmailForGuestUserCommand'
 const CHECKOUT_ENDPOINT_API = '/api/Stripe/CreateCheckoutSession'
+const BILLING_PORTAL_ENDPOINT_API = '/api/Stripe/CreateBillingPortal'
 const GET_LINKS_ENDPOINT_API = '/api/Link/GetLinksCommand'
 const GET_LINK_ENDPOINT_API = '/api/Link/GetLinkCommand'
 const DELETE_LINK_ENDPOINT_API = '/api/Link/DeleteLinkCommand'
@@ -23,6 +24,9 @@ const FORGOT_PASSWORD_RESET_ENDPOINT_API = '/api/User/ResetUserPasswordCommand'
 const GET_LINK_STATS_BY_ID_ENDPOINT_API = '/api/Link/GetLinkStatsCommand'
 const GET_LINK_VIEWS_BY_ID_ENDPOINT_API =
   '/api/Link/GetLinkViewsCountForGuestUser'
+const SEND_EMAIL_WITH_DELETED_CODE_ENDPOINT_API =
+  '/api/User/SendEmailWithDeleteAccountCodeCommand'
+const ELETED_ACCOUNT_ENDPOINT_API = '/api/User/DeleteAccountCommand'
 
 export const repository = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
   async login(formValue: LoginForm): Promise<LoginResponse> {
@@ -112,6 +116,12 @@ export const repository = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
     })
   },
 
+  async createBillingPortal() {
+    return await fetch<CheckoutResponse>(BILLING_PORTAL_ENDPOINT_API, {
+      method: 'POST'
+    })
+  },
+
   async loadLinksData(pageNo: number, pageSize: number) {
     return await fetch<LinksResponse>(
       `${GET_LINKS_ENDPOINT_API}?PageNo=${pageNo}&PageSize=${pageSize}`,
@@ -196,5 +206,23 @@ export const repository = <T>(fetch: $Fetch<T, NitroFetchRequest>) => ({
         method: 'GET'
       }
     )
+  },
+
+  async sendEmailWithDeletedCode() {
+    return await fetch<{ success: boolean; isActiveSubscriptions: boolean }>(
+      SEND_EMAIL_WITH_DELETED_CODE_ENDPOINT_API,
+      {
+        method: 'GET'
+      }
+    )
+  },
+
+  async deleteAccount(pin: string) {
+    return await fetch<{ success: boolean }>(ELETED_ACCOUNT_ENDPOINT_API, {
+      method: 'POST',
+      body: {
+        code: pin
+      }
+    })
   }
 })

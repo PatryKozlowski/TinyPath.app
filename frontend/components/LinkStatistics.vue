@@ -24,7 +24,7 @@
     >
       <div class="w-full p-2 rounded-xl flex flex-col space-y-6">
         <LinkStatisticsItem
-          :isPremium="!isPremium || isAdmin"
+          :isPremium="isPremium || isAdmin"
           :linkStoreCounts="linkStore.browserCounts"
           :linkStoreMaxCounts="linkStore.maxBrowserCounts"
           title="Browsers"

@@ -29,8 +29,13 @@
             </Badge>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Billing</DropdownMenuItem>
-          <DropdownMenuItem>Team</DropdownMenuItem>
+          <Spinner v-if="isLoading" />
+          <DropdownMenuItem
+            class="cursor-pointer"
+            v-if="user?.isSubscribed && !isLoading"
+            @click="handleCreateBillingPortal"
+            >Billing</DropdownMenuItem
+          >
           <DropdownMenuSeparator />
           <DropdownMenuItem class="cursor-pointer" @click="authStore.logout()">
             <Icon name="lucide:log-out" class="w-5 h-5 mr-2" />
@@ -57,6 +62,19 @@ import {
 
 const authStore = useAuthStore()
 const mobileSlider = useMobileSliderStore()
+const { $api } = useNuxtApp()
+const useRepository = repository($api)
+const isLoading = ref(false)
 
+const handleCreateBillingPortal = async () => {
+  isLoading.value = true
+  const data = await useRepository.createBillingPortal().finally(() => {
+    isLoading.value = false
+  })
+
+  if (data.link) {
+    window.location.href = data.link
+  }
+}
 const { user, isAuthenticated } = storeToRefs(authStore)
 </script>
